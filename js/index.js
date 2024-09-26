@@ -21,7 +21,13 @@ import { login } from './request.js';
     });
     /*登录界面登录按钮被点击，将用户名密码通过事件event传到事件函数中*/
     wifiSwitch.wifiLogin.addEventListener('loginClick', async(ev) => {
-      const result=await login('test');
+      
+      const result=await login(`{username:${ev.username},password:${ev.password}}`);//发送登录信息用户名密码
+      if(result.password){
+        localStorage.setItem('login',JSON.stringify(result));//若返回的登录信息密码存在向本地写入永久存储
+        
+      }
+      console.log('getItem',localStorage.getItem('login'));
       console.log(result.password);
       console.log('loginClick', ev.username + '_' + ev.password);
     });
