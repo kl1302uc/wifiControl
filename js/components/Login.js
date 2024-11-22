@@ -1,5 +1,5 @@
-const template=document.createElement('template');
-template.innerHTML=`
+const template = document.createElement('template');
+template.innerHTML = `
 <style>
 :host{
   position:absolute;
@@ -7,6 +7,7 @@ template.innerHTML=`
   text-align:center;
   background-color:red;
   overflow:hidden;
+  display:none;
 }
 .loginWrap{
   display:inline-flex;
@@ -37,24 +38,31 @@ template.innerHTML=`
 </div>
 
 `
-class Login extends HTMLElement{
-  constructor(){
+class Login extends HTMLElement {
+  constructor() {
     super();
-    this.attachShadow({mode:'open'});
+    this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    
-    /*登录界面被点击阻止冒泡到body避免关闭自己*/
-    this.addEventListener('click',(ev)=>{
-      ev.stopPropagation();//阻止冒泡
-    });
-    this.username=this.shadowRoot.querySelector('.loginWrap>label>input[name=username]');
-    this.password=this.shadowRoot.querySelector('.loginWrap>label>input[name=password]');
 
+    /*登录界面被点击阻止冒泡到body避免关闭自己*/
+    this.addEventListener('click', (ev) => {
+      ev.stopPropagation(); //阻止冒泡
+    });
+    this.username = this.shadowRoot.querySelector('.loginWrap>label>input[name=username]');
+    this.password = this.shadowRoot.querySelector('.loginWrap>label>input[name=password]');
+    let login = JSON.parse(localStorage.getItem('login'));
+    if (login) {
+      this.username.value = login.username;
+      this.password.value = login.password;
+    }else{
+      this.style.display='block';
+    }
+    /*创建这个组件自定义事件*/
     const event = new Event('loginClick');
-    this.shadowRoot.querySelector('.loginWrap>button').addEventListener('click',(ev)=>{
-      Object.assign(event,{username:this.username.value,password:this.password.value});
-      this.dispatchEvent(event);
+    this.shadowRoot.querySelector('.loginWrap>button').addEventListener('click', (ev) => {
+      Object.assign(event, { username: this.username.value, password: this.password.value }); //向event中添加参数本地input输入的内容
+      this.dispatchEvent(event); //触发自定义事件
     });
   }
 }
-customElements.define('wifi-login',Login);
+customElements.define('wifi-login', Login);

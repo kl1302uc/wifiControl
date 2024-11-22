@@ -73,7 +73,7 @@ class Switch extends HTMLElement {
    /*创建事件*/
    const upClick=new Event('upClick');
    const downClick=new Event('downClick');
-   upClick.name='实验';//测试能否传参
+   //upClick.name='实验';//测试能否传参
    /*给组件添加自定义事件传送到index获取*/
    /*△被点击*/
    this.up.addEventListener('click',()=>{
