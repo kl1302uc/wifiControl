@@ -34,12 +34,14 @@ wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
       window.userkey = result.userkey; //将常用的正确密钥保存到全局变量
       msg.innerHTML = '提示信息:登录成功！';
       wifiSwitch.wifiLogin.style.display = 'none'; //登录成功后关闭登录界面
+      setTimeout(()=>{getStatus();},1000);
+      
     } else {
       msg.innerText = '提示信息:' + result.error;
     }
-    console.log('getItem', localStorage.getItem('login'));
-    console.log('userkey', result.userkey);
-    console.log('loginClick', ev.username + '_' + ev.password);
+    //console.log('getItem', localStorage.getItem('login'));
+    //console.log('userkey', result.userkey);
+    //console.log('loginClick', ev.username + '_' + ev.password);
   } catch (err) {
     console.warn('error:' + err);
     msg.innerText = '错误信息:' + err;

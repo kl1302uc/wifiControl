@@ -20,7 +20,7 @@ export const login = async (value) => {
     }
 
     const result = await response.json();
-    // console.log('返回的参数',result);
+    //console.log('返回的参数',result);
     return result;
   } catch (err) {
     console.error('Error:', err.message);
@@ -102,29 +102,31 @@ export const getStatus = async () => {
       // 修正逻辑表达式的优先级
       window.msg.innerHTML = '提示信息:' + interpret(resultMotor === 'stopping' ? resultStatus : resultMotor);
       // 如果满足条件，或者超时，停止轮询
-      if ((resultMotor === 'stopping' && resultStatus != 'halfway') || i > 20) {
+      if ((resultMotor === 'stopping' && resultStatus != 'halfway') || i > 30) {
         clearInterval(timer);
       }
     }, 1000);
   } else {
     // 初始状态下直接显示信息
-    window.msg.innerHTML = '提示信息:' + resultStatus;
+    window.msg.innerHTML = '提示信息:' + interpret(resultStatus);
   }
 }
 /*△被点击发送控制开门指令*/
 export const open = async () => {
   const result = await login({ userkey: window.userkey, K: "open" });
-  //window.msg.innerHTML = '提示信息:' + result.msg;
-  getStatus();
+  result.msg && (window.msg.innerHTML = '提示信息:' + result.msg);
+  setTimeout(()=>{getStatus();},1000);
+
   // console.log(JSON.stringify(result));
 }
 /*▽被点击发送控制关门指令*/
 export const close = async () => {
   const result = await login({ userkey: window.userkey, K: "close" });
   //console.log(JSON.stringify(result));
-  //window.msg.innerHTML = '提示信息:' + result.msg;
+  result.msg && (window.msg.innerHTML = '提示信息:' + result.msg);
   //console.log(JSON.stringify(result));
-  getStatus();
+  setTimeout(()=>{getStatus();},1000);
+
 }
 /*通过本地userkey重新获取变换的userkey并保存本地*/
 export const reconnect = async () => {
@@ -134,11 +136,11 @@ export const reconnect = async () => {
     localStorage.setItem('userkey', result.userkey);
     window.userkey = result.userkey;
     window.msg.innerHTML = '提示信息:密钥更换成功！'
-    console.log('密钥更换成功!');
+  
   } else {
     window.msg.innerHTML = '提示信息:密钥更换失败！'
-    console.log('密钥更换失败!');
+  
   }
   console.log(result.userkey);
-  getStatus();
+  setTimeout(()=>{getStatus();},1000);
 }
