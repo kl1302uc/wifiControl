@@ -61,8 +61,20 @@ wifiSwitch.addEventListener('downClick', (event) => {
 });
 
 /*重连按钮被点击*/
-wifiFooter.reconnect.addEventListener('click', (ev) => {
+wifiFooter.reconnect.addEventListener('click', function(){
+  
+  this.timer && clearTimeout(this.timer);
+    // 禁用按钮
+  wifiFooter.reconnect.disabled = true;
+  
+  // 执行你的点击事件逻辑
   reconnect();
+
+  // 1000毫秒后重新启用按钮
+  this.timer=setTimeout(() => {
+    wifiFooter.reconnect.disabled = false;
+  }, 1000);
+  
 });
 /*底部登录按钮被点击显示或关闭登录界面*/
 wifiFooter.showLogin.addEventListener('click', (ev) => {

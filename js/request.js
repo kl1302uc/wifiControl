@@ -82,7 +82,7 @@ const readMotor = async () => {
   return result;
 }
 
-/*定时20秒获取车库状态*/
+/*定时30秒获取车库状态*/
 
 export const getStatus = async () => {
   let i = 0;
@@ -94,6 +94,7 @@ export const getStatus = async () => {
 
   // 如果条件满足，则开始定时轮询
   if (resultMotor!=resultStatus && resultMotor != 'stopping' || resultStatus == 'halfway') {
+    window.msg.innerHTML = '提示信息:' + interpret(resultMotor === 'stopping' ? resultStatus : resultMotor);
     timer = setInterval(async () => {
       resultMotor = await readMotor();
       resultStatus = await readStatus();
@@ -113,6 +114,7 @@ export const getStatus = async () => {
 }
 /*△被点击发送控制开门指令*/
 export const open = async () => {
+  clearInterval(timer);
   const result = await login({ userkey: window.userkey, K: "open" });
   result.msg && (window.msg.innerHTML = '提示信息:' + result.msg);
   setTimeout(()=>{getStatus();},1000);
@@ -121,6 +123,7 @@ export const open = async () => {
 }
 /*▽被点击发送控制关门指令*/
 export const close = async () => {
+  clearInterval(timer);
   const result = await login({ userkey: window.userkey, K: "close" });
   //console.log(JSON.stringify(result));
   result.msg && (window.msg.innerHTML = '提示信息:' + result.msg);
@@ -130,8 +133,9 @@ export const close = async () => {
 }
 /*通过本地userkey重新获取变换的userkey并保存本地*/
 export const reconnect = async () => {
-  const result = await login({ userkey: window.userkey, K: 'reconnect' });
+  clearInterval(timer);
 
+  const result = await login({ userkey: window.userkey, K: 'reconnect' });
   if (result.userkey) {
     localStorage.setItem('userkey', result.userkey);
     window.userkey = result.userkey;
@@ -143,4 +147,6 @@ export const reconnect = async () => {
   }
   console.log(result.userkey);
   setTimeout(()=>{getStatus();},1000);
+
+  
 }
