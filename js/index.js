@@ -1,5 +1,6 @@
 import './components/Switch.js';
 import './components/Footer.js';
+import './components/Setting.js';
 import './components/Login.js'; //此组件是定义在Switch中的在此引入也可以在组件中使用
 import { login, reconnect, close, open, getStatus } from './request.js';
 
@@ -13,7 +14,10 @@ const wifiFooter = document.querySelector('wifi-footer'); //获取底部按钮�
 const winHeight = innerHeight;
 window.userkey = localStorage.getItem('userkey');
 document.body.style.height = winHeight + 'px'; //确定body高度防止输入法弹出上上推网页
-
+/* 暂时关闭开始写设置界面 --------------------------------------------------------------------------------*/
+wifiSwitch.style.display="none";
+wifiFooter.style.display="none";
+window.msg.style.display="none";
 getStatus();
 /*window.addEventListener('resize',()=>{
   console.log('窗口大小发生变化',innerHeight);
@@ -38,6 +42,7 @@ wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
       
     }else if(result.admin){
       console.log('将要跳转设置页面',result.admin);
+      window.location="#setting"
     }else {
       msg.innerText = '提示信息:' + result.error;
     }
@@ -91,3 +96,14 @@ wifiFooter.showLogin.addEventListener('click', (ev) => {
 wifiFooter.exit.addEventListener('click', (ev) => {
   window.close(); //关闭网页
 });
+window.onhashchange=()=>{
+  if(window.location.hash=="#setting"){
+    wifiSwitch.style.display="none";
+    wifiFooter.style.display="none";
+    window.msg.style.display="none";
+  }else{
+    wifiSwitch.style.display="flex";
+    wifiFooter.style.display="block";
+    window.msg.style.display="block";
+  }
+}
