@@ -9,7 +9,7 @@ console.log("SHA-256 Hash:", sha256Hash);
 
 window.msg = document.querySelector('.message');
 const wifiSwitch = document.querySelector('wifi-switch'); //获取开关组件
-const wifiFooter = document.querySelector('wifi-footer'); //获取底部按钮导航组件
+const wifiFooter = document.querySelector('wifi-footer'); //获取底部按钮导航组
 const winHeight = innerHeight;
 window.userkey = localStorage.getItem('userkey');
 document.body.style.height = winHeight + 'px'; //确定body高度防止输入法弹出上上推网页
@@ -27,7 +27,7 @@ document.body.addEventListener('click', (event) => {
 wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
   
   try {
-    const result = await login({ username: ev.username, password: ev.password, K: 'resetUserkey' });
+    const result = await login({ username: ev.username, password: ev.password, K:ev.username=='admin'?'manager':'resetUserkey' });
     if (result.userkey) {
       localStorage.setItem('userkey', result.userkey); //若返回的登录信息密钥存在向本地写入永久存储
       localStorage.setItem('login', JSON.stringify({ username: ev.username, password: ev.password })); //向本地写入正确用户名密码
@@ -36,7 +36,9 @@ wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
       wifiSwitch.wifiLogin.style.display = 'none'; //登录成功后关闭登录界面
       setTimeout(()=>{getStatus();},1000);
       
-    } else {
+    }else if(result.admin){
+      console.log('将要跳转设置页面',result.admin);
+    }else {
       msg.innerText = '提示信息:' + result.error;
     }
     //console.log('getItem', localStorage.getItem('login'));
@@ -48,9 +50,12 @@ wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
   }
 });
 /*△被点击*/
-wifiSwitch.addEventListener('upClick', (event) => {
+wifiSwitch.addEventListener('upClick', ()=>{
+  //if(this.deltaT && performance.now()-this.deltaT<2000) return;
+
   open();
   //console.log('upClick', event.name);
+  //this.deltaT=performance.now();
 
 });
 /*▽被点击*/

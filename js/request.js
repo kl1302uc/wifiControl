@@ -1,6 +1,6 @@
 let instruct = JSON.parse(localStorage.getItem('login'));
-//const IP = 'http://123.132.246.136:8866';
-const IP = 'http://112.228.87.213:8866';
+//const IP = 'http://112.228.87.213:8867';
+const IP = 'http://192.168.3.176:8866';
 let timer = 0;
 /*登录并接收返回加密后的密钥*/
 export const login = async (value) => {
@@ -113,16 +113,16 @@ export const getStatus = async () => {
   }
 }
 /*△被点击发送控制开门指令*/
-export const open = async () => {
+export const open = async ()=>{
   clearInterval(timer);
   const result = await login({ userkey: window.userkey, K: "open" });
   result.msg && (window.msg.innerHTML = '提示信息:' + result.msg);
   setTimeout(()=>{getStatus();},1000);
-
   // console.log(JSON.stringify(result));
 }
 /*▽被点击发送控制关门指令*/
 export const close = async () => {
+  
   clearInterval(timer);
   const result = await login({ userkey: window.userkey, K: "close" });
   //console.log(JSON.stringify(result));
