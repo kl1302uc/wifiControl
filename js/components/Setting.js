@@ -1,9 +1,9 @@
 class Setting extends HTMLElement {
-  constructor() {
-    super();
+    constructor() {
+        super();
 
-    const template = document.createElement('template');
-    template.innerHTML = /*html*/ `
+        const template = document.createElement('template');
+        template.innerHTML = /*html*/ `
         <style>
             :host{
                 display:block;
@@ -11,7 +11,7 @@ class Setting extends HTMLElement {
             .wrap{
                 display:flex;
                 flex-direction:column;
-                height:100%;
+                height:100vh;
             }
             .wrap>header{
                 font-size:5vw;
@@ -24,13 +24,17 @@ class Setting extends HTMLElement {
               list-style:none;
               padding:0;
               margin:0;
-
+            }
+            .wrap>ul{
+                display:flex;
+                flex-direction:column;
+                flex:1;
+                height:0;
             }
             .wrap>ul>li{
               padding:1vw 2vw;
               border-bottom:solid 1px gray;
-              font-size:6vw;
-                
+              font-size:6vw;  
             }
             .wrap>ul>.setWiFi{
               display:flex;
@@ -80,15 +84,19 @@ class Setting extends HTMLElement {
             }
             .wrap>ul>.setUserList{
               padding:1vw 0;
+              flex:1;
+              height:0;
+              min-height:0;
+              overflow:auto;
             }
             .wrap .userList{
+              overflow:auto;
               background:gray;
               color:white;
           
             }
             .wrap .userList>.addUser{
               text-align:center;
-
             }
             .wrap .userList>li:not(.addUser){
               display:flex;
@@ -133,19 +141,32 @@ class Setting extends HTMLElement {
                     <li><span>刘波</span><button>删除</button></li>
                     <li><span>刘波</span><button>删除</button></li>
                     <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
+                    <li><span>刘波</span><button>删除</button></li>
                     <li class='addUser'>+添加用户</li>
   
                   </ul>
                 </li>
-                <li>4</li>
-                <li>5</li>
-                <li>6</li>
             
             </ul>
         <div>
         `
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
-  }
+        this.attachShadow({ mode: "open" });
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
+    }
 }
 customElements.define("wifi-setting", Setting);
