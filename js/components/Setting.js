@@ -82,6 +82,22 @@ class Setting extends HTMLElement {
               width:5vw;
               height:5vw;
             }
+            .manage>.setManage{
+              display:flex;
+              align-items:center;
+            
+            }
+            .manage>.setManage>span{
+            
+              flex:1;
+              font-size:3.5vw;
+              color:red;
+            }
+            .manage>.setManage>button{
+            font-size:5vw;
+              margin-right:0;
+              
+            }
             .wrap>ul>.setUserList{
               padding:1vw 0;
               flex:1;
@@ -91,7 +107,7 @@ class Setting extends HTMLElement {
             }
             .wrap .userList{
               overflow:auto;
-              background:gray;
+              background:RGB(110, 123, 108);
               color:white;
           
             }
@@ -103,14 +119,15 @@ class Setting extends HTMLElement {
               justify-content:space-between;
               align-items:center;
               padding:1vw 3vw;
-              border-bottom:solid 1px red;
+              border-bottom:solid 1px black;
+             
             }
             .wrap .userList>li:active{
-              background:white;
-              color:black;
+              background:RGB(234,234,239);
+           
             }
             .wrap .userList>li>button{
-              
+              /*pointer-events:none;*/
               font-size:5vw;
             }
         </style>
@@ -130,10 +147,11 @@ class Setting extends HTMLElement {
                 </div>
               </li>
               <li class='manage'>
-                <div class='setManage'>
+                
                   <label><span>管理员旧密码:</span><input type='text'/></label>
                   <label><span>管理员新密码:</span><input type='text'/></label>
-                </div>
+                  <div class='setManage'><span>忘记密码按重置按钮5秒，默认密码admin</span><button>保存设置</button></div>
+                
               </li>
                 <li class='setUserList'>
                   <ul class='userList'>
@@ -167,6 +185,10 @@ class Setting extends HTMLElement {
         `
         this.attachShadow({ mode: "open" });
         this.shadowRoot.appendChild(template.content.cloneNode(true));
+        this.userList=this.shadowRoot.querySelector('.setUserList>.userList');
+        this.userList.addEventListener('click',(ev)=>{
+          
+        });
     }
 }
 customElements.define("wifi-setting", Setting);
