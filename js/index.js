@@ -96,6 +96,9 @@ wifiFooter.showLogin.addEventListener('click', (ev) => {
 wifiFooter.exit.addEventListener('click', (ev) => {
   window.close(); //关闭网页
 });
+/* 阻止弹出菜单 */
+//document.body.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+/* 跳转组件事件 */
 window.onhashchange=()=>{
   if(window.location.hash=="#setting"){
     wifiSwitch.style.display="none";

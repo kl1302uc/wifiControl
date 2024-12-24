@@ -16,7 +16,7 @@ class Setting extends HTMLElement {
             .wrap>header{
                 font-size:5vw;
                 text-align:center;
-                background-color:gray;
+                background-color:RGB(204, 232, 207);
                 justify-content:flex-start;
             }
             .wrap ul{
