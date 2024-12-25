@@ -99,16 +99,22 @@ class Setting extends HTMLElement {
               
             }
             .wrap>ul>.setUserList{
-              padding:1vw 0;
+              padding:0;
+              flex:1;
+              height:0;
+              min-height:0;
+              display:flex;
+              flex-direction:column;
+             
+            }
+            .wrap .userList{
               flex:1;
               height:0;
               min-height:0;
               overflow:auto;
-            }
-            .wrap .userList{
-              overflow:auto;
               background:RGB(110, 123, 108);
               color:white;
+             
           
             }
             .wrap .userList>.addUser{
@@ -178,7 +184,9 @@ class Setting extends HTMLElement {
                     <li class='addUser'>+添加用户</li>
   
                   </ul>
+                  <button>保存设置</button>
                 </li>
+               
             
             </ul>
         <div>
