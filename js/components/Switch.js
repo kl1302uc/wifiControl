@@ -16,6 +16,7 @@ class Switch extends HTMLElement {
       border:solid 0.5vw black;
       box-shadow:1.5vw 1.5vw 2vw;
       margin:auto;
+      background-color:white;
     }
     .up{
      border:solid 25vw transparent;

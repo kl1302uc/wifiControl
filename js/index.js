@@ -7,17 +7,19 @@ import { login, reconnect, close, open, getStatus } from './request.js';
 const message = "01221204a";
 const sha256Hash = CryptoJS.SHA256(message).toString();
 console.log("SHA-256 Hash:", sha256Hash);
-
-window.msg = document.querySelector('.message');
+const header=document.querySelector('header');
+window.msg = document.querySelector('header>.message');
 const wifiSwitch = document.querySelector('wifi-switch'); //获取开关组件
 const wifiFooter = document.querySelector('wifi-footer'); //获取底部按钮导航组
+const wifiSetting=document.querySelector('wifi-setting');
 const winHeight = innerHeight;
 window.userkey = localStorage.getItem('userkey');
 document.body.style.height = winHeight + 'px'; //确定body高度防止输入法弹出上上推网页
 /* 暂时关闭开始写设置界面 --------------------------------------------------------------------------------*/
-wifiSwitch.style.display="none";
+/*wifiSwitch.style.display="none";
 wifiFooter.style.display="none";
-window.msg.style.display="none";
+window.msg.style.display="none";*/
+wifiSetting.style.display='none';
 getStatus();
 /*window.addEventListener('resize',()=>{
   console.log('窗口大小发生变化',innerHeight);
@@ -29,7 +31,7 @@ document.body.addEventListener('click', (event) => {
 });
 /*登录界面登录按钮被点击，将用户名密码通过事件event传到事件函数中*/
 wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
-  
+  clearInterval(timer);//关闭启动界面后自动获取状态定时器
   try {
     const result = await login({ username: ev.username, password: ev.password, K:ev.username=='admin'?'manager':'resetUserkey' });
     if (result.userkey) {
@@ -41,7 +43,8 @@ wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
       setTimeout(()=>{getStatus();},1000);
       
     }else if(result.admin){
-      console.log('将要跳转设置页面',result.admin);
+      
+      console.log('将要跳转设置页面',result.admin);//登录管理员界面成功后返回succeed
       window.location="#setting"
     }else {
       msg.innerText = '提示信息:' + result.error;
@@ -72,7 +75,9 @@ wifiSwitch.addEventListener('downClick', (event) => {
 
 /*重连按钮被点击*/
 wifiFooter.reconnect.addEventListener('click', function(){
-  
+  window.clearInterval(window.timer);
+  window.clearTimeout(window.timer2);
+
   this.timer && clearTimeout(this.timer);
     // 禁用按钮
   wifiFooter.reconnect.disabled = true;
@@ -103,10 +108,12 @@ window.onhashchange=()=>{
   if(window.location.hash=="#setting"){
     wifiSwitch.style.display="none";
     wifiFooter.style.display="none";
-    window.msg.style.display="none";
+    header.style.display="none";
+    wifiSetting.style.display='block';
   }else{
     wifiSwitch.style.display="flex";
     wifiFooter.style.display="block";
-    window.msg.style.display="block";
+    header.style.display="block";
+    wifiSetting.style.display='none';
   }
 }

@@ -1,7 +1,8 @@
 let instruct = JSON.parse(localStorage.getItem('login'));
-//const IP = 'http://112.228.87.213:8867';
-const IP = 'http://192.168.3.176:8866';
-let timer = 0;
+const IP = 'http://119.176.174.204:8867';
+//const IP = 'http://192.168.3.176:8866';
+window.timer = 0;
+window.timer2=0;
 /*登录并接收返回加密后的密钥*/
 export const login = async (value) => {
   /*获取存储在服务器中的用户发送的信息*/
@@ -86,7 +87,8 @@ const readMotor = async () => {
 
 export const getStatus = async () => {
   let i = 0;
-  clearInterval(timer);
+  window.clearInterval(window.timer);
+  window.clearTimeout(window.timer2);
 
   // 获取初始状态
   let resultMotor = await readMotor();
@@ -95,7 +97,7 @@ export const getStatus = async () => {
   // 如果条件满足，则开始定时轮询
   if (resultMotor!=resultStatus && resultMotor != 'stopping' || resultStatus == 'halfway') {
     window.msg.innerHTML = '提示信息:' + interpret(resultMotor === 'stopping' ? resultStatus : resultMotor);
-    timer = setInterval(async () => {
+    window.timer = setInterval(async () => {
       resultMotor = await readMotor();
       resultStatus = await readStatus();
       i++;
@@ -104,7 +106,8 @@ export const getStatus = async () => {
       window.msg.innerHTML = '提示信息:' + interpret(resultMotor === 'stopping' ? resultStatus : resultMotor);
       // 如果满足条件，或者超时，停止轮询
       if ((resultMotor === 'stopping' && resultStatus != 'halfway') || i > 30) {
-        clearInterval(timer);
+        clearInterval(window.timer);
+        clearTimeout(window.timer2);
       }
     }, 1000);
   } else {
@@ -114,26 +117,33 @@ export const getStatus = async () => {
 }
 /*△被点击发送控制开门指令*/
 export const open = async ()=>{
-  clearInterval(timer);
+  
+
+  window.clearInterval(window.timer);
+  window.clearTimeout(window.timer2);
   const result = await login({ userkey: window.userkey, K: "open" });
   result.msg && (window.msg.innerHTML = '提示信息:' + result.msg);
-  setTimeout(()=>{getStatus();},1000);
+  
+  window.timer2=setTimeout(()=>{getStatus();},1000);
   // console.log(JSON.stringify(result));
 }
 /*▽被点击发送控制关门指令*/
 export const close = async () => {
   
-  clearInterval(timer);
+  window.clearInterval(window.timer);
+  window.clearTimeout(window.timer2);
   const result = await login({ userkey: window.userkey, K: "close" });
   //console.log(JSON.stringify(result));
   result.msg && (window.msg.innerHTML = '提示信息:' + result.msg);
   //console.log(JSON.stringify(result));
-  setTimeout(()=>{getStatus();},1000);
+  window.timer2=setTimeout(()=>{getStatus();console.log('执行')},1000);
 
 }
 /*通过本地userkey重新获取变换的userkey并保存本地*/
 export const reconnect = async () => {
-  clearInterval(timer);
+  window.clearInterval(window.timer);
+    window.clearTimeout(window.timer2);
+
 
   const result = await login({ userkey: window.userkey, K: 'reconnect' });
   if (result.userkey) {

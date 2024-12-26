@@ -7,11 +7,12 @@ class Setting extends HTMLElement {
         <style>
             :host{
                 display:block;
+                height:100%;
             }
             .wrap{
                 display:flex;
                 flex-direction:column;
-                height:100vh;
+                height:100%;
             }
             .wrap>header{
                 font-size:5vw;
@@ -30,11 +31,14 @@ class Setting extends HTMLElement {
                 flex-direction:column;
                 flex:1;
                 height:0;
+                
+        
+                
             }
             .wrap>ul>li{
               padding:1vw 2vw;
               border-bottom:solid 1px gray;
-              font-size:6vw;  
+              font-size:5vw;  
             }
             .wrap>ul>.setWiFi{
               display:flex;
@@ -50,7 +54,7 @@ class Setting extends HTMLElement {
             }
 
             .wrap>ul>.setWiFi>.setWiFiModule>button{
-              font-size:6vw;
+              font-size:5vw;
             
             }
 
@@ -69,7 +73,7 @@ class Setting extends HTMLElement {
               display:block;
               width:30vw;
               flex:1;
-              font-size:6vw;
+              font-size:5vw;
             }
             .wrap>ul>li input[type='text']:focus{
               border:solid orange 1px;
@@ -90,7 +94,7 @@ class Setting extends HTMLElement {
             .manage>.setManage>span{
             
               flex:1;
-              font-size:3.5vw;
+              font-size:3vw;
               color:red;
             }
             .manage>.setManage>button{
@@ -156,7 +160,7 @@ class Setting extends HTMLElement {
                 
                   <label><span>管理员旧密码:</span><input type='text'/></label>
                   <label><span>管理员新密码:</span><input type='text'/></label>
-                  <div class='setManage'><span>忘记密码按重置按钮5秒，默认密码admin</span><button>保存设置</button></div>
+                  <div class='setManage'><span>忘记密码按重置按钮5秒以上，默认密码admin</span><button>保存设置</button></div>
                 
               </li>
                 <li class='setUserList'>
@@ -184,7 +188,7 @@ class Setting extends HTMLElement {
                     <li class='addUser'>+添加用户</li>
   
                   </ul>
-                  <button>保存设置</button>
+                  
                 </li>
                
             
@@ -197,6 +201,7 @@ class Setting extends HTMLElement {
         this.userList.addEventListener('click',(ev)=>{
           
         });
+        console.log('设置界面加载后');
     }
 }
 customElements.define("wifi-setting", Setting);
