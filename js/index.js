@@ -2,6 +2,7 @@ import './components/Switch.js';
 import './components/Footer.js';
 import './components/Setting.js';
 import './components/Login.js'; //此组件是定义在Switch中的在此引入也可以在组件中使用
+import './components/Menus.js';
 import { login, reconnect, close, open, getStatus } from './request.js';
 
 const message = "01221204a";
