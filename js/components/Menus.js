@@ -1,7 +1,7 @@
-class Menus extends HTMLElement{
-  constructor(){
+class Menus extends HTMLElement {
+  constructor() {
     super();
-    this.attachShadow({mode:'open'}).innerHTML=`
+    this.attachShadow({ mode: 'open' }).innerHTML = `
     <style>
     :host{
     
@@ -29,27 +29,38 @@ class Menus extends HTMLElement{
     </style>
     <div class='wrap'>
       <p class='menuBut'>···</p>
-      <ul>
-        <li>进入设置</li>
-        <li>导出记录</li>
-        <li>关于帮助</li>
+      <ul class='menuList'>
+        <li data-option='setting'>进入设置</li>
+        <li data-option='changePassword'>修改密码</li>
+
+        <li data-option='record'>导出记录</li>
+        <li data-option='helf'>关于帮助</li>
       </ul>
     </div>
     `
-    this.list=this.shadowRoot.querySelector('.wrap>ul');
-    this.menuBut=this.shadowRoot.querySelector('.wrap>.menuBut');
-    this.menuBut.addEventListener('click',(ev)=>{
-      
-     this.list.style.display=window.getComputedStyle(this.list,null).getPropertyValue("display")=='none'?'block':'none';
-     ev.stopPropagation();
-    });
-    document.body.addEventListener('click',()=>{
-      this.list.style.display='none';
-  
+    this.list = this.shadowRoot.querySelector('.wrap>.menuList');
+    this.menuBut = this.shadowRoot.querySelector('.wrap>.menuBut');
+    this.shadowRoot.addEventListener('click',(ev)=>{
+      ev.stopPropagation();
     })
 
+    this.menuBut.addEventListener('click', (ev) => {
+
+      this.list.style.display = window.getComputedStyle(this.list, null).getPropertyValue("display") == 'none' ? 'block' : 'none';
+    });
+    const listClick=new Event('listClick');
+    this.list.addEventListener('click', (ev) => {
+      Object.assign(listClick,{option:ev.target.dataset.option});
+      this.dispatchEvent(listClick);
+      this.list.style.display = 'none';
+
+    });
+    
+    document.body.addEventListener('click', () => {
+      this.list.style.display = 'none';
+    });
 
   }
-  
+
 }
-window.customElements.define('wifi-menus',Menus);
+window.customElements.define('wifi-menus', Menus);
