@@ -116,13 +116,13 @@ class Setting extends HTMLElement {
               height:0;
               min-height:0;
               overflow:auto;
-              background:RGB(110, 123, 108);
               color:white;
-             
-          
             }
             .wrap .userList>.addUser{
               text-align:center;
+            }
+            .wrap .userList>li{
+                background-color:RGB(110, 123, 108);
             }
             .wrap .userList>li:not(.addUser){
               display:flex;
@@ -198,8 +198,16 @@ class Setting extends HTMLElement {
         this.attachShadow({ mode: "open" });
         this.shadowRoot.appendChild(template.content.cloneNode(true));
         this.userList=this.shadowRoot.querySelector('.setUserList>.userList');
+        
+        
         this.userList.addEventListener('click',(ev)=>{
-          
+            if(ev.target.innerText=="删除"){
+                let result=confirm("确定要删除"+ev.target.previousElementSibling.innerText+"吗?");
+                if(result){
+                    ev.target.parentNode.parentNode.removeChild(ev.target.parentNode);
+                }
+                console.log(result?"删除":"未删除");
+            }
         });
         console.log('设置界面加载后');
     }

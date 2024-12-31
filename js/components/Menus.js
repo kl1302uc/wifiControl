@@ -1,7 +1,7 @@
 class Menus extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' }).innerHTML = `
+    this.attachShadow({ mode: 'open' }).innerHTML =/*html*/ `
     <style>
     :host{
     
