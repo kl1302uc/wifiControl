@@ -85,6 +85,7 @@ class Switch extends HTMLElement {
      this.dispatchEvent(downClick);//发送事件
    });
   }
-
+  
+  
 }
 customElements.define('wifi-switch', Switch);

@@ -142,7 +142,7 @@ export const close = async () => {
 /*通过本地userkey重新获取变换的userkey并保存本地*/
 export const reconnect = async () => {
   window.clearInterval(window.timer);
-    window.clearTimeout(window.timer2);
+  window.clearTimeout(window.timer2);
 
 
   const result = await login({ userkey: window.userkey, K: 'reconnect' });
@@ -157,6 +157,4 @@ export const reconnect = async () => {
   }
   console.log(result.userkey);
   setTimeout(()=>{getStatus();},1000);
-
-  
 }
