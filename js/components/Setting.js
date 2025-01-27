@@ -49,6 +49,7 @@ class Setting extends HTMLElement {
             .wrap>ul>.setWiFi>.setWiFiModule{
               display:flex;
               align-items:center;
+              font-size:4.5vw;
             }
             .wrap>ul>.setWiFi>.setWiFiModule>div{
               flex:1;
@@ -160,8 +161,10 @@ class Setting extends HTMLElement {
                   <label><span>WiFi密码:</span><input type='text'/></label>
                 </div>
                 <div class='setWiFiModule'>
-                  <label><input type='radio' name='module'/>无线终端</label>
-                  <label><input type='radio' name='module'/>接入点</label>
+                  <label><input type='radio' name='module' value='WIFI_STA'/>无线终端</label>
+                  <label><input type='radio' name='module' value='WIFI_AP'/>接入点</label>
+                  <label><input type='radio' name='module' value='WIFI_AP_STA'/>双模式</label>
+
                   <div></div>
                   <button>保存设置</button>
                 </div>
@@ -208,7 +211,7 @@ class Setting extends HTMLElement {
     this.userList.addEventListener('click', (ev) => {
 
       if (ev.target.nodeName == 'BUTTON') { //删除按钮被点击
-        let result = confirm("确定要删除" + ev.target.parentNode.firstElementChild.innerText + "吗?");
+        let result = confirm("确定要删除\"" + ev.target.parentNode.firstElementChild.innerText + "\"吗?");
         if (result) {
           //--------------------------此处添加删除单片机的相关用户函数--------------------------------------
           ev.target.parentNode.parentNode.removeChild(ev.target.parentNode);
@@ -219,7 +222,7 @@ class Setting extends HTMLElement {
         this.editUser.style.display = 'block';
         this.editUser.key = { username: '', password: '' };
         this.editUser.currentLi = ev.target.closest('.userList>li');
-      } else if(ev.target.nodeName!='UL') { //获取被点击列表项中的用户名密码
+      } else if (ev.target.nodeName != 'UL') { //获取被点击列表项中的用户名密码
         this.editUser.style.display = 'block';
         this.editUser.key = { username: ev.target.closest('.userList>li').firstElementChild.innerText, password: ev.target.closest('.userList>li').children[1].innerText };
         this.editUser.currentLi = ev.target.closest('.userList>li');
@@ -228,28 +231,12 @@ class Setting extends HTMLElement {
     });
     /*添加编辑后点击保存按钮触发的事件*/
     this.editUser.addEventListener('confirmClick', (ev) => {
-      let username = this.editUser.username.value.trim();
-      let password = this.editUser.password.value.trim();
-      const limitUsername = /^[\w\u4e00-\u9fa5]+$/g; //限定用户名只能为汉子字母数字及下划线
-      const limitPassword = /[^\w]+/g;
-      /*判断用户名密码是否为空*/
-      if (!username || !password) {
-        alert('用户名或密码不能为空');
-        return
-      }
-      /*判断用户名是否合法*/
-      if (!limitUsername.test(username)) {
-        alert('用户名只能为汉子、字母、数字及下划线！');
-        return;
-      };
-      /*判断密码是否合法*/
-      if (limitPassword.test(password)) {
-        alert('密码只能为字母、数字及下划线！');
-        return;
-      };
+      let username = this.editUser.username.value;
+      let password = this.editUser.password.value;
+      if(!this.judgment(password,username))return;
 
       /*区分添加与编辑用户*/
-      if (ev.target.currentLi.innerText == '+添加用户') {//添加用户处理事件
+      if (ev.target.currentLi.innerText == '+添加用户') { //添加用户处理事件
         if (this.queryRepeat(username) == true) {
           alert('用户名已存在');
           return;
@@ -257,8 +244,8 @@ class Setting extends HTMLElement {
         const li = document.createElement('li');
         li.innerHTML = `<span>${username}</span><span>${password}</span><button>删除</button>`;
         ev.target.currentLi.parentNode.insertBefore(li, ev.target.currentLi)
-        console.log('添加用户被点击触发事件');//-----------------------------------------------------------
-      } else {//编辑处理事件
+        console.log('添加用户被点击触发事件'); //-----------------------------------------------------------
+      } else { //编辑处理事件
         if (this.queryRepeat(username, Array.from(this.editUser.currentLi.parentNode.children).indexOf(this.editUser.currentLi)) == true) {
           alert('用户名已存在');
           return;
@@ -281,6 +268,31 @@ class Setting extends HTMLElement {
       }
     }
     return false;
+  }
+  /*用正则表达式判断字符串是否合法*/
+  judgment(password, username = 'a') {
+    /*创建正则表达式*/
+    const limitUsername = /^[\w\u4e00-\u9fa5]+$/g; //限定用户名只能为汉子字母数字及下划线
+    const limitPassword = /[^\w]+/g;
+    /*两个字符串都进行删首尾空*/
+    password = password.trim();
+    username = username.trim();
+    /*判断用户名密码是否为空*/
+    if (!username || !password) {
+      alert('用户名或密码不能为空');
+      return false;
+    }
+    /*判断用户名是否合法*/
+    if (!limitUsername.test(username)) {
+      alert('用户名只能为汉子、字母、数字及下划线！');
+      return false;
+    };
+    /*判断密码是否合法*/
+    if (limitPassword.test(password)) {
+      alert('密码只能为字母、数字及下划线！');
+      return false;
+    };
+    return true;
   }
 }
 customElements.define("wifi-setting", Setting);
