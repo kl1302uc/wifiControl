@@ -1,7 +1,7 @@
 class Menus extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' }).innerHTML =/*html*/ `
+    this.attachShadow({ mode: 'open' }).innerHTML = /*html*/ `
     <style>
     :host{
     
@@ -40,27 +40,28 @@ class Menus extends HTMLElement {
     `
     this.list = this.shadowRoot.querySelector('.wrap>.menuList');
     this.menuBut = this.shadowRoot.querySelector('.wrap>.menuBut');
-    this.shadowRoot.addEventListener('click',(ev)=>{
-      ev.stopPropagation();
-    })
-
+   // this.menuWrap = this.shadowRoot.querySelector('.wrap');
+    
+    
+    
     this.menuBut.addEventListener('click', (ev) => {
-
+      
       this.list.style.display = window.getComputedStyle(this.list, null).getPropertyValue("display") == 'none' ? 'block' : 'none';
     });
-    const listClick=new Event('listClick');
+    const listClick = new Event('listClick');
     this.list.addEventListener('click', (ev) => {
-      Object.assign(listClick,{option:ev.target.dataset.option});
+      Object.assign(listClick, { option: ev.target.dataset.option });
       this.dispatchEvent(listClick);
       this.list.style.display = 'none';
-
+      ev.stopPropagation(); 
+      
     });
     
     document.body.addEventListener('click', () => {
       this.list.style.display = 'none';
     });
-
+    
   }
-
+  
 }
 window.customElements.define('wifi-menus', Menus);
