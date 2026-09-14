@@ -18,10 +18,10 @@ const winHeight = innerHeight;
 window.userkey = localStorage.getItem('userkey');
 document.body.style.height = winHeight + 'px'; //确定body高度防止输入法弹出上上推网页
 /* 暂时关闭开始写设置界面 --------------------------------------------------------------------------------*/
-/*wifiSwitch.style.display = "none";
+/* wifiSwitch.style.display = "none";
 wifiFooter.style.display = "none";
 window.msg.style.display = "none";
-wifiSetting.style.display = 'block';*/
+wifiSetting.style.display = 'block'; */
 /* 暂时关闭开始写主界面 --------------------------------------------------------------------------------*/
 wifiSwitch.style.display = "relative";
 wifiFooter.style.display = "block";
@@ -32,13 +32,13 @@ getStatus();
   console.log('窗口大小发生变化',innerHeight);
   //document.body.style.marginBottom=(innerHeight-winHeight)+'px';
 })*/
-wifiMenus.addEventListener('click',(ev)=>{
-    wifiSwitch.wifiLogin.style.display = 'none'; //点击body内所有内容均关闭登录界面
-    ev.stopPropagation();//停止冒泡
+wifiMenus.addEventListener('click', (ev) => {
+  wifiSwitch.wifiLogin.style.display = 'none'; //点击body内所有内容均关闭登录界面
+  ev.stopPropagation();//停止冒泡
 });
 /*右上角获取点击的哪个菜单打开相应的功能*/
 wifiMenus.addEventListener('listClick', (ev) => {
-  
+
   if (ev.option == 'setting') { //进入登录界面设置管理员用户名admin
     wifiSwitch.wifiLogin.style.display = 'block';
     wifiSwitch.wifiLogin.username.value = 'admin';
@@ -74,8 +74,8 @@ wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
       wifiSwitch.wifiLogin.style.display = 'none'; //登录成功后关闭登录界面
       setTimeout(() => { getStatus(); }, 1000);
 
-    } else if (result.admin) {
-      console.log('将要跳转设置页面', result.admin); //登录管理员界面成功后返回succeed
+    } else if (result.adminkey) {
+      console.log('将要跳转设置页面', result.adminkey); //登录管理员界面成功后返回succeed
       window.location = "#setting";
     } else {
       msg.innerText = '提示信息:' + result.error;
@@ -102,7 +102,7 @@ wifiSwitch.addEventListener('downClick', (event) => {
 });
 
 /*重连按钮被点击*/
-wifiFooter.reconnect.addEventListener('click', function() {
+wifiFooter.reconnect.addEventListener('click', function () {
   window.clearInterval(window.timer);
   window.clearTimeout(window.timer2);
 
@@ -123,7 +123,7 @@ wifiFooter.reconnect.addEventListener('click', function() {
 wifiFooter.showLogin.addEventListener('click', (ev) => {
   let loginDisplay = getComputedStyle(wifiSwitch.wifiLogin).display; //获取登录界面实时样式
   wifiSwitch.wifiLogin.style.display = loginDisplay == 'none' ? 'block' : 'none'; //根据登录界面实时样式确定是否显示登录界面
-  wifiMenus.list.style.display='none';//关闭菜单列表
+  wifiMenus.list.style.display = 'none';//关闭菜单列表
   ev.stopPropagation(); //停止冒泡
 });
 /*退出网页*/
@@ -133,7 +133,7 @@ wifiFooter.exit.addEventListener('click', (ev) => {
 /* 阻止弹出菜单 */
 //document.body.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 /* 跳转组件事件 */
-window.onhashchange = () => {
+window.addEventListener('hashchange', () => {
   if (window.location.hash == "#setting") {
     wifiSwitch.style.display = "none";
     wifiFooter.style.display = "none";
@@ -145,4 +145,4 @@ window.onhashchange = () => {
     header.style.display = "block";
     wifiSetting.style.display = 'none';
   }
-}
+})

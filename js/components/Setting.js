@@ -53,6 +53,9 @@ class Setting extends HTMLElement {
             }
             .wrap>ul>.setWiFi>.setWiFiModule>div{
               flex:1;
+              text-align:left;
+              color:red;
+              font-size:3vw;
             }
 
             .wrap>ul>.setWiFi>.setWiFiModule>button{
@@ -161,11 +164,11 @@ class Setting extends HTMLElement {
                   <label><span>WiFi密码:</span><input type='text'/></label>
                 </div>
                 <div class='setWiFiModule'>
-                  <label><input type='radio' name='module' value='WIFI_STA'/>无线终端</label>
-                  <label><input type='radio' name='module' value='WIFI_AP'/>接入点</label>
-                  <label><input type='radio' name='module' value='WIFI_AP_STA'/>双模式</label>
+                  <label><input type='checkbox' name='module' value='WIFI_STA'/>无线终端</label>
+                  <label><input type='checkbox' name='module' value='WIFI_AP'/>接入点</label>
+                  
 
-                  <div></div>
+                  <div>192.168.6.1</div>
                   <button>保存设置</button>
                 </div>
               </li>
@@ -233,7 +236,7 @@ class Setting extends HTMLElement {
     this.editUser.addEventListener('confirmClick', (ev) => {
       let username = this.editUser.username.value;
       let password = this.editUser.password.value;
-      if(!this.judgment(password,username))return;
+      if (!this.judgment(password, username)) return;
 
       /*区分添加与编辑用户*/
       if (ev.target.currentLi.innerText == '+添加用户') { //添加用户处理事件
@@ -257,9 +260,23 @@ class Setting extends HTMLElement {
       }
       this.editUser.style.display = 'none'; //关闭用户编辑窗口
     })
-    console.log('设置界面加载后');
-  }
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash == "#setting") {
+        console.log('setting界面被打开');
+        (window.timer);
+        //获取设置数据
 
+
+
+
+
+      } else {
+        console.log('setting界面被关闭');
+      }
+    })
+
+
+  }
   /*处理用户名是否除了本身是否还有重名，index为本身的排列号*/
   queryRepeat(username, index = -1) {
     for (let i = 0; i < this.userList.children.length - 1; i++) {
@@ -294,5 +311,18 @@ class Setting extends HTMLElement {
     };
     return true;
   }
+  connectedCallback() {
+    console.log('setting当自定义元素第一次被连接到文档DOM时被调用', this.IPAddress);
+  }
+
+  disconnectedCallback() {
+    console.log('setting当自定义元素与文档DOM断开连接时被调用');
+  }
+
+  adoptedCallback() {
+    console.log('当自定义元素被移动到新文档时被调用');
+  }
+
+
 }
 customElements.define("wifi-setting", Setting);
