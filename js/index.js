@@ -4,7 +4,7 @@ import './components/Setting.js';
 import './components/Login.js'; //此组件是定义在Switch中的在此引入也可以在组件中使用
 import './components/Menus.js';
 import { login, reconnect, close, open, getStatus } from './request.js';
-
+window.location = "#home";
 //const message = "01221204a";
 //const sha256Hash = CryptoJS.SHA256(message).toString();
 //console.log("SHA-256 Hash:", sha256Hash);
@@ -64,6 +64,8 @@ document.body.addEventListener('click', (event) => {
 /*登录界面登录按钮被点击，将用户名密码通过事件event传到事件函数中*/
 wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
   clearInterval(timer); //关闭启动界面后自动获取状态定时器
+  clearInterval(timer2); //关闭启动界面后自动获取状态定时器
+  window.i = 30;
   try {
     const result = await login({ username: ev.username, password: ev.password, K: ev.username == 'admin' ? 'manager' : 'resetUserkey' });
     if (result.userkey) {
@@ -104,7 +106,7 @@ wifiSwitch.addEventListener('downClick', (event) => {
 /*重连按钮被点击*/
 wifiFooter.reconnect.addEventListener('click', function () {
   window.clearInterval(window.timer);
-  window.clearTimeout(window.timer2);
+
 
   this.timer && clearTimeout(this.timer);
   // 禁用按钮

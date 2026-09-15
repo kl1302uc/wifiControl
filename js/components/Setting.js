@@ -160,7 +160,7 @@ class Setting extends HTMLElement {
             <ul>
               <li class='setWiFi'>
                 <div class='setWiFiName'>
-                  <label><span>WiFi名称:</span><input type='text'/></label>
+                  <label><span>WiFi名称:</span><input type='text' placeholder='点击WiFi名称搜索附近WiFi'/></label>
                   <label><span>WiFi密码:</span><input type='text'/></label>
                 </div>
                 <div class='setWiFiModule'>

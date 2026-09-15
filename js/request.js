@@ -4,6 +4,7 @@ const IP = 'http://192.168.3.176:8866';
 window.timer = 0;
 window.timer2 = 0;
 let flag = true; // 用于确保 getStatus 只执行一次
+window.i = 0;
 /* 延迟函数不卡UI主线程 */
 function delay(ms) {
   return new Promise(resolve => {
@@ -93,14 +94,10 @@ const readMotor = async () => {
 /*定时30秒获取车库状态*/
 
 export const getStatus = async () => {
-
-
+  i = 0;
   if (flag) {
     console.log("This function is called only once");
     flag = false;
-
-
-    let i = 0;
 
     window.clearInterval(window.timer);
     window.clearTimeout(window.timer2);
@@ -112,7 +109,7 @@ export const getStatus = async () => {
     // 如果条件满足，则开始延迟轮询
     if (resultMotor != resultStatus && resultMotor != 'stopping' || resultStatus == 'halfway') {
       window.msg.innerHTML = '提示信息:' + interpret(resultMotor === 'stopping' ? resultStatus : resultMotor);
-      while (i < 30) {
+      while (window.i < 30) {
 
         resultStatus = await readStatus();
         await delay(1000); // 延迟1秒
