@@ -160,8 +160,8 @@ class Setting extends HTMLElement {
             <ul>
               <li class='setWiFi'>
                 <div class='setWiFiName'>
-                  <label><span>WiFi名称:</span><input type='text' placeholder='点击WiFi名称搜索附近WiFi'/></label>
-                  <label><span>WiFi密码:</span><input type='text'/></label>
+                  <label><span>WiFi名称:</span><input type='text' placeholder='点击WiFi名称搜索WiFi'/></label>
+                  <label><span>WiFi密码:</span><input type='text' placeholder='请输入WiFi密码'/></label>
                 </div>
                 <div class='setWiFiModule'>
                   <label><input type='checkbox' name='module' value='WIFI_STA'/>无线终端</label>
@@ -261,9 +261,15 @@ class Setting extends HTMLElement {
       this.editUser.style.display = 'none'; //关闭用户编辑窗口
     })
     window.addEventListener('hashchange', () => {
-      if (window.location.hash == "#setting") {
+      console.log('hashchange事件被触发', window.location.hash);
+      if (window.location.hash.split('?')[0] == "#setting") {
         console.log('setting界面被打开');
-        (window.timer);
+        const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+        const user = JSON.parse(params.get('data'));
+        console.log('获取设置数据', user);
+
+
+
         //获取设置数据
 
 

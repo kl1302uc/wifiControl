@@ -1,7 +1,6 @@
 let instruct = JSON.parse(localStorage.getItem('login'));
 //const IP = 'http://119.176.174.204:8867';
 const IP = 'http://192.168.3.176:8866';
-window.timer = 0;
 window.timer2 = 0;
 let flag = true; // 用于确保 getStatus 只执行一次
 window.i = 0;
@@ -73,7 +72,6 @@ const interpret = (value) => {
 const readStatusPublic = async (status) => {
   try {
     const result = await login({ userkey: window.userkey, K: status });
-    result.error && clearInterval(timer);
     return result.status || result.error;
   } catch (err) {
     console.warn(err.message);
@@ -98,8 +96,6 @@ export const getStatus = async () => {
   if (flag) {
     console.log("This function is called only once");
     flag = false;
-
-    window.clearInterval(window.timer);
     window.clearTimeout(window.timer2);
 
     // 获取初始状态
@@ -136,8 +132,6 @@ export const getStatus = async () => {
 /*△被点击发送控制开门指令*/
 export const open = async () => {
 
-
-  window.clearInterval(window.timer);
   window.clearTimeout(window.timer2);
   const result = await login({ userkey: window.userkey, K: "open" });
   result.msg && (window.msg.innerHTML = '提示信息:' + result.msg);
@@ -148,7 +142,6 @@ export const open = async () => {
 /*▽被点击发送控制关门指令*/
 export const close = async () => {
 
-  window.clearInterval(window.timer);
   window.clearTimeout(window.timer2);
   const result = await login({ userkey: window.userkey, K: "close" });
   //console.log(JSON.stringify(result));
@@ -159,7 +152,6 @@ export const close = async () => {
 }
 /*通过本地userkey重新获取变换的userkey并保存本地*/
 export const reconnect = async () => {
-  window.clearInterval(window.timer);
   window.clearTimeout(window.timer2);
 
 
@@ -175,4 +167,13 @@ export const reconnect = async () => {
   }
   console.log(result.userkey);
   window.timer2 = setTimeout(() => { getStatus(); }, 1000);
+}
+/* 设置界面获取初始化数据 */
+export const getSetting = async () => {
+  const result = await login({ adminkey: window.adminkey, K: 'getSetting' });
+  if (result) {
+    return result;
+  } else {
+    window.msg.innerHTML = '提示信息:获取设置数据失败！'
+  }
 }
