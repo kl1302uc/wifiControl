@@ -1,10 +1,10 @@
+import { login, reconnect, close, open, getStatus, getSetting } from './request.js';
 import './components/Switch.js';
 import './components/Footer.js';
 import './components/Setting.js';
 import './components/Login.js'; //此组件是定义在Switch中的在此引入也可以在组件中使用
 import './components/Menus.js';
-import { login, reconnect, close, open, getStatus, getSetting } from './request.js';
-window.location = "#home";
+window.location.hash = "#home";
 //const message = "01221204a";
 //const sha256Hash = CryptoJS.SHA256(message).toString();
 //console.log("SHA-256 Hash:", sha256Hash);
@@ -79,13 +79,13 @@ wifiSwitch.wifiLogin.addEventListener('loginClick', async (ev) => {
     } else if (result.adminkey) {
       console.log('将要跳转设置页面', result.adminkey); //登录管理员界面成功后返回succeed
       window.adminkey = result.adminkey; //将管理员密钥保存到全局变量
-      localStorage.setItem('adminkey', result.adminkey);//若返回的登录信息管理员密钥存在向本地写入永久存储
-      let results = await getSetting();
-      console.log('获取设置数据', results);
-      const params = new URLSearchParams({ data: JSON.stringify(results) });
-
-      window.location.hash = `#setting?${params}`;
-      //window.location = `#setting?${params.toString()}`;
+      localStorage.setItem('adminkey', result.adminkey);//若返回的登录信息管理员密钥存在向本地写入永久存储--------------------------------------------------
+      //let results = await getSetting();
+      //console.log('获取设置数据', results);
+      /* const params = new URLSearchParams({ data: JSON.stringify(results) });
+      window.location.hash = `#setting?${params}`; */
+      //sessionStorage.setItem('settingData', JSON.stringify(results)); //将设置数据存储到sessionStorage中
+      window.location.hash = '#setting';
     } else {
       msg.innerText = '提示信息:' + result.error;
     }

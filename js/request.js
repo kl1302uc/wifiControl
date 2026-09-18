@@ -174,6 +174,6 @@ export const getSetting = async () => {
   if (result) {
     return result;
   } else {
-    window.msg.innerHTML = '提示信息:获取设置数据失败！'
+    alert('获取设置数据失败！');
   }
 }

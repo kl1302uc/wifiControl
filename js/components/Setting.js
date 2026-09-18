@@ -1,4 +1,5 @@
 import './EditUser.js';
+import { login, reconnect, close, open, getStatus, getSetting } from '../request.js';
 class Setting extends HTMLElement {
   constructor() {
     super();
@@ -208,8 +209,18 @@ class Setting extends HTMLElement {
         `
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.getScanWiFi = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:first-child>span');
     this.userList = this.shadowRoot.querySelector('.setUserList>.userList');
     this.editUser = this.shadowRoot.querySelector('.wrap>edit-user');
+    this.getScanWiFi.addEventListener('click', async () => {
+      console.log('获取WiFi名称被点击');
+      try {
+        const result = await login({ adminkey: window.adminkey, K: 'getScanWiFi' });
+        console.log('获取WiFi名称', result);
+      } catch (error) {
+        console.log('获取WiFi名称失败', error);
+      }
+    });
     /*列表被点击ul事件*/
     this.userList.addEventListener('click', (ev) => {
 
@@ -226,9 +237,9 @@ class Setting extends HTMLElement {
         this.editUser.key = { username: '', password: '' };
         this.editUser.currentLi = ev.target.closest('.userList>li');
       } else if (ev.target.nodeName != 'UL') { //获取被点击列表项中的用户名密码
-        this.editUser.style.display = 'block';
-        this.editUser.key = { username: ev.target.closest('.userList>li').firstElementChild.innerText, password: ev.target.closest('.userList>li').children[1].innerText };
-        this.editUser.currentLi = ev.target.closest('.userList>li');
+        this.editUser.style.display = 'block';//显示用户编辑窗口
+        this.editUser.key = { username: ev.target.closest('.userList>li').firstElementChild.innerText, password: ev.target.closest('.userList>li').children[1].innerText };//将被点击列表项的用户名密码传给用户编辑窗口
+        this.editUser.currentLi = ev.target.closest('.userList>li');//将被点击的列表项传给用户编辑窗口，方便编辑后将用户名密码赋值回去
       }
 
     });
@@ -236,7 +247,7 @@ class Setting extends HTMLElement {
     this.editUser.addEventListener('confirmClick', (ev) => {
       let username = this.editUser.username.value;
       let password = this.editUser.password.value;
-      if (!this.judgment(password, username)) return;
+      if (!this.judgment(password, username)) return;//判断字符串是否合法
 
       /*区分添加与编辑用户*/
       if (ev.target.currentLi.innerText == '+添加用户') { //添加用户处理事件
@@ -246,7 +257,7 @@ class Setting extends HTMLElement {
         }
         const li = document.createElement('li');
         li.innerHTML = `<span>${username}</span><span>${password}</span><button>删除</button>`;
-        ev.target.currentLi.parentNode.insertBefore(li, ev.target.currentLi)
+        ev.target.currentLi.parentNode.insertBefore(li, ev.target.currentLi);
         console.log('添加用户被点击触发事件'); //-----------------------------------------------------------
       } else { //编辑处理事件
         if (this.queryRepeat(username, Array.from(this.editUser.currentLi.parentNode.children).indexOf(this.editUser.currentLi)) == true) {
@@ -260,13 +271,19 @@ class Setting extends HTMLElement {
       }
       this.editUser.style.display = 'none'; //关闭用户编辑窗口
     })
-    window.addEventListener('hashchange', () => {
+    window.addEventListener('hashchange', async () => {
       console.log('hashchange事件被触发', window.location.hash);
-      if (window.location.hash.split('?')[0] == "#setting") {
+      if (window.location.hash == "#setting") {
         console.log('setting界面被打开');
-        const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+        let results = await getSetting();
+        console.log('获取设置数据setting内', results);
+        sessionStorage.setItem('settingData', JSON.stringify(results)); //将设置数据存储到sessionStorage中
+
+        /* const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
         const user = JSON.parse(params.get('data'));
-        console.log('获取设置数据', user);
+        console.log('获取设置数据', user); */
+        const settingData = JSON.parse(sessionStorage.getItem('settingData'));
+        console.log("获取设置数据", settingData);
 
 
 
