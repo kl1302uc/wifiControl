@@ -1,6 +1,8 @@
 import './EditUser.js';
 import { login, reconnect, close, open, getStatus, getSetting } from '../request.js';
+let settingData = {};
 class Setting extends HTMLElement {
+
   constructor() {
     super();
 
@@ -124,9 +126,11 @@ class Setting extends HTMLElement {
             }
             .wrap .userList>.addUser{
               text-align:center;
+
             }
             .wrap .userList>li{
                 background-color:RGB(110, 123, 108);
+                
             }
             .wrap .userList>li:not(.addUser){
               display:flex;
@@ -162,7 +166,7 @@ class Setting extends HTMLElement {
               <li class='setWiFi'>
                 <div class='setWiFiName'>
                   <label><span>WiFi名称:</span><input type='text' placeholder='点击WiFi名称搜索WiFi'/></label>
-                  <label><span>WiFi密码:</span><input type='text' placeholder='请输入WiFi密码'/></label>
+                  <label><span>WiFi密码:</span><input type='text' placeholder='点击WiFi密码详细设置'/></label>
                 </div>
                 <div class='setWiFiModule'>
                   <label><input type='checkbox' name='module' value='WIFI_STA'/>无线终端</label>
@@ -209,16 +213,41 @@ class Setting extends HTMLElement {
         `
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.SSIDInput = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:first-child>input');
+    this.PASSInput = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:last-child>input');
     this.getScanWiFi = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:first-child>span');
+    this.setSTAWiFi = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:last-child>span');
     this.userList = this.shadowRoot.querySelector('.setUserList>.userList');
     this.editUser = this.shadowRoot.querySelector('.wrap>edit-user');
+    this.wifiSTA = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_STA"]');
+    this.wifiAP = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_AP"]');
+
+    this.wifiSTA.addEventListener('change', () => {
+      if (!this.wifiSTA.checked) {
+        this.wifiAP.checked = true;
+        this.SSIDInput.value = settingData.wifiConfig.AP_SSID;
+        this.PASSInput.value = settingData.wifiConfig.AP_PASS;
+      } else {
+        this.SSIDInput.value = settingData.wifiConfig.SSID;
+        this.PASSInput.value = settingData.wifiConfig.PASS;
+      }
+    });
+    this.wifiAP.addEventListener('change', () => {
+      if (!this.wifiAP.checked) {
+        this.wifiSTA.checked = true;
+        this.SSIDInput.value = settingData.wifiConfig.SSID;
+        this.PASSInput.value = settingData.wifiConfig.PASS;
+      }
+    });
     this.getScanWiFi.addEventListener('click', async () => {
-      console.log('获取WiFi名称被点击');
-      try {
-        const result = await login({ adminkey: window.adminkey, K: 'getScanWiFi' });
-        console.log('获取WiFi名称', result);
-      } catch (error) {
-        console.log('获取WiFi名称失败', error);
+      console.log('获取WiFi名称被点击', this.wifiSTA.checked);
+      if (this.wifiSTA.checked) {//只有无线终端复选框被选中时才能获取附近WiFi;
+        try {
+          const result = await login({ adminkey: window.adminkey, K: 'getScanWiFi' });
+          console.log('获取WiFi名称', result);
+        } catch (error) {
+          console.log('获取WiFi名称失败', error);
+        }
       }
     });
     /*列表被点击ul事件*/
@@ -271,28 +300,41 @@ class Setting extends HTMLElement {
       }
       this.editUser.style.display = 'none'; //关闭用户编辑窗口
     })
+    /* 设置界面进入 */
     window.addEventListener('hashchange', async () => {
       console.log('hashchange事件被触发', window.location.hash);
       if (window.location.hash == "#setting") {
         console.log('setting界面被打开');
         let results = await getSetting();
-        console.log('获取设置数据setting内', results);
         sessionStorage.setItem('settingData', JSON.stringify(results)); //将设置数据存储到sessionStorage中
-
         /* const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
         const user = JSON.parse(params.get('data'));
         console.log('获取设置数据', user); */
-        const settingData = JSON.parse(sessionStorage.getItem('settingData'));
+        settingData = JSON.parse(sessionStorage.getItem('settingData'));
         console.log("获取设置数据", settingData);
 
-
-
         //获取设置数据
+        this.userList.innerHTML = '';
+        settingData.key.forEach(user => {
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${user.username}</span><span>${user.password}</span><button>删除</button>`;
+          this.userList.appendChild(li);
+        });
+        //this.userList.innerHTML += "<li class='addUser'>+添加用户</li>";
+        const li = document.createElement('li');
+        li.innerText = '+添加用户';
+        this.userList.appendChild(li).classList.add('addUser');//添加添加用户 
 
-
-
-
-
+        if (settingData.wifiConfig.MODE == 'WIFI_AP') {
+          this.SSIDInput.value = settingData.wifiConfig.AP_SSID;
+          this.PASSInput.value = settingData.wifiConfig.AP_PASS;
+          this.wifiAP.checked = true;
+        } else {
+          this.SSIDInput.value = settingData.wifiConfig.SSID;
+          this.PASSInput.value = settingData.wifiConfig.PASS;
+          this.wifiSTA.checked = true;
+          if (settingData.wifiConfig.MODE == 'WIFI_AP_STA') this.wifiAP.checked = true;
+        }
       } else {
         console.log('setting界面被关闭');
       }
@@ -300,6 +342,7 @@ class Setting extends HTMLElement {
 
 
   }
+
   /*处理用户名是否除了本身是否还有重名，index为本身的排列号*/
   queryRepeat(username, index = -1) {
     for (let i = 0; i < this.userList.children.length - 1; i++) {

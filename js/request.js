@@ -1,6 +1,7 @@
 let instruct = JSON.parse(localStorage.getItem('login'));
 //const IP = 'http://119.176.174.204:8867';
 const IP = 'http://192.168.3.176:8866';
+//const IP = 'http://192.168.6.1:8866';
 window.timer2 = 0;
 let flag = true; // 用于确保 getStatus 只执行一次
 window.i = 0;
