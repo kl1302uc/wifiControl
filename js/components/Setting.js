@@ -164,7 +164,7 @@ class Setting extends HTMLElement {
         </style>
         <div class="wrap">
             <edit-user></edit-user>
-            <wifi-list><wifi-list>
+           
             <header>设置界面</header>
             <ul>
               <li class='setWiFi'>
@@ -213,10 +213,12 @@ class Setting extends HTMLElement {
                
             
             </ul>
+             <wifi-list><wifi-list>
         <div>
         `
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.wifiList=this.shadowRoot.querySelector('.wrap>wifi-list');
     this.SSIDInput = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:first-child>input');
     this.PASSInput = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:last-child>input');
     this.SSIDX = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>label:first-child>span:last-child');
@@ -227,6 +229,11 @@ class Setting extends HTMLElement {
     this.editUser = this.shadowRoot.querySelector('.wrap>edit-user');
     this.wifiSTA = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_STA"]');
     this.wifiAP = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_AP"]');
+    this.wifiList.addEventListener('confirmClick',(ev)=>{
+      console.log('ev.SSID',ev.SSID);
+      this.SSIDInput.value=ev.SSID || '';
+      this.PASSInput.value='';
+    })
     /* 判断输入框的内容是否合法不合法会在右侧显示X */
     this.SSIDInput.addEventListener("input", (ev) => {
       //let regex = /(.*?)/g; //匹配汉字、字母、数字的字符
@@ -263,7 +270,10 @@ class Setting extends HTMLElement {
       if (this.wifiSTA.checked) {//只有无线终端复选框被选中时才能获取附近WiFi;
         try {
           const result = await login({ adminkey: window.adminkey, K: 'getScanWiFi' });
-          console.log('获取WiFi名称', result);
+          //console.log('获取WiFi名称', result);
+          this.wifiList.list=result;
+          this.wifiList.style.display='block';
+          console.log('wifiList.list=',this.wifiList.list);
         } catch (error) {
           console.log('获取WiFi名称失败', error);
         }

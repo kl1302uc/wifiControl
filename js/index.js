@@ -26,7 +26,7 @@ wifiFooter.style.display = "none";
 window.msg.style.display = "none";
 wifiSetting.style.display = 'block';
 /* 暂时关闭开始写主界面 --------------------------------------------------------------------------------*/
-/* wifiSwitch.style.display = "relative";
+ /*wifiSwitch.style.display = "relative";
 wifiFooter.style.display = "block";
 window.msg.style.display = "block";
 wifiSetting.style.display = 'none'; */
