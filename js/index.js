@@ -1,10 +1,11 @@
 import { login, reconnect, close, open, getStatus, getSetting } from './request.js';
+import './components/WiFiList.js';//此组件是定义在Setting中的
 import './components/Switch.js';
 import './components/Footer.js';
 import './components/Setting.js';
 import './components/Login.js'; //此组件是定义在Switch中的在此引入也可以在组件中使用
 import './components/Menus.js';
-import './components/WiFiList.js';//此组件是定义在Setting中的
+
 window.location.hash = "#home";
 //const message = "01221204a";
 //const sha256Hash = CryptoJS.SHA256(message).toString();
