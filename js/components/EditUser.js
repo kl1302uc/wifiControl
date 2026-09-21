@@ -1,7 +1,7 @@
-class EditUser extends HTMLElement{
-  constructor(){
+class EditUser extends HTMLElement {
+  constructor() {
     super();
-    this.attachShadow({mode:'open'}).innerHTML=`
+    this.attachShadow({ mode: 'open' }).innerHTML =/*html*/`
     <style>
     :host{
       display:none;
@@ -54,18 +54,18 @@ class EditUser extends HTMLElement{
     </div>
 
     `
-    const confirmClick=new Event('confirmClick');
-    
-    this.username=this.shadowRoot.querySelector('.wrap>label:first-child>input');
-    this.password=this.shadowRoot.querySelector('.wrap>label:nth-child(2)>input');
-    this.cancel=this.shadowRoot.querySelector('.wrap>.btn>button');
-    this.confirm=this.cancel.nextElementSibling;
+    const confirmClick = new Event('confirmClick');
+
+    this.username = this.shadowRoot.querySelector('.wrap>label:first-child>input');
+    this.password = this.shadowRoot.querySelector('.wrap>label:nth-child(2)>input');
+    this.cancel = this.shadowRoot.querySelector('.wrap>.btn>button');
+    this.confirm = this.cancel.nextElementSibling;
     /*取消按钮被单击*/
-    this.cancel.addEventListener('click',()=>{
-      this.style.display='none';
+    this.cancel.addEventListener('click', () => {
+      this.style.display = 'none';
     });
     /*确定按钮被点击*/
-    this.confirm.addEventListener('click',()=>{
+    this.confirm.addEventListener('click', () => {
       //Object.assign(confirmClick,{mode:this.index});
       this.dispatchEvent(confirmClick);//发送事件
     })
@@ -77,13 +77,13 @@ class EditUser extends HTMLElement{
     });*/
   }
   get key() {
-    return {username:this.username.value,password:this.password.value};
+    return { username: this.username.value, password: this.password.value };
   }
-  
+
   set key(value) {
-  
-    this.username.value=value.username;
-    this.password.value=value.password;
+
+    this.username.value = value.username;
+    this.password.value = value.password;
   }
 
   connectedCallback() {
@@ -98,4 +98,4 @@ class EditUser extends HTMLElement{
     console.log('当自定义元素被移动到新文档时被调用');
   }
 }
-window.customElements.define('edit-user',EditUser);
+window.customElements.define('edit-user', EditUser);

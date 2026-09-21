@@ -71,7 +71,10 @@ class Setting extends HTMLElement {
               flex-direction:column;
               /*box-shadow:0px 0px 1px red;*/
             }
-          
+            .wrap>ul>.setWiFi>.setWiFiName>label>span:last-child{
+              color:red;
+              visibility:hidden;
+            }
             .wrap>ul>li label{
               display:flex;
               align-items:center;
@@ -161,12 +164,13 @@ class Setting extends HTMLElement {
         </style>
         <div class="wrap">
             <edit-user></edit-user>
+            <wifi-list><wifi-list>
             <header>设置界面</header>
             <ul>
               <li class='setWiFi'>
                 <div class='setWiFiName'>
-                  <label><span>WiFi名称:</span><input type='text' placeholder='点击WiFi名称搜索WiFi'/></label>
-                  <label><span>WiFi密码:</span><input type='text' placeholder='点击WiFi密码详细设置'/></label>
+                  <label><span>WiFi名称:</span><input type='text' placeholder='点击WiFi名称搜索WiFi'/><span>x</span></label>
+                  <label><span>WiFi密码:</span><input type='text' placeholder='点击WiFi密码详细设置'/><span>x</span></label>
                 </div>
                 <div class='setWiFiModule'>
                   <label><input type='checkbox' name='module' value='WIFI_STA'/>无线终端</label>
@@ -215,13 +219,26 @@ class Setting extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.SSIDInput = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:first-child>input');
     this.PASSInput = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:last-child>input');
+    this.SSIDX = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>label:first-child>span:last-child');
+    this.PASSX = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>label:last-child>span:last-child');
     this.getScanWiFi = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:first-child>span');
     this.setSTAWiFi = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:last-child>span');
     this.userList = this.shadowRoot.querySelector('.setUserList>.userList');
     this.editUser = this.shadowRoot.querySelector('.wrap>edit-user');
     this.wifiSTA = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_STA"]');
     this.wifiAP = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_AP"]');
+    /* 判断输入框的内容是否合法不合法会在右侧显示X */
+    this.SSIDInput.addEventListener("input", (ev) => {
+      //let regex = /(.*?)/g; //匹配汉字、字母、数字的字符
+      let regex = /^[\w\-\.@#\u4e00-\u9fa5]{1,32}$/g; //匹配汉字、字母、数字的字符
+      this.SSIDX.style.visibility = regex.test(ev.target.value) ? "hidden" : "visible";
+    });
+    this.PASSInput.addEventListener("input", (ev) => {
+      let regex = /^[\w\-\.@#]{8,32}$/g; //匹配非汉字
+      this.PASSX.style.visibility = regex.test(ev.target.value) ? "hidden" : "visible";
+    });
 
+    /* 这两个复选框控制至少选择一个并且控制输入框内容 */
     this.wifiSTA.addEventListener('change', () => {
       if (!this.wifiSTA.checked) {
         this.wifiAP.checked = true;
@@ -239,6 +256,8 @@ class Setting extends HTMLElement {
         this.PASSInput.value = settingData.wifiConfig.PASS;
       }
     });
+
+
     this.getScanWiFi.addEventListener('click', async () => {
       console.log('获取WiFi名称被点击', this.wifiSTA.checked);
       if (this.wifiSTA.checked) {//只有无线终端复选框被选中时才能获取附近WiFi;
