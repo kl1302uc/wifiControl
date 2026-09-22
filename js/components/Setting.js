@@ -268,13 +268,14 @@ class Setting extends HTMLElement {
     this.getScanWiFi.addEventListener('click', async () => {
       console.log('获取WiFi名称被点击', this.wifiSTA.checked);
       if (this.wifiSTA.checked) {//只有无线终端复选框被选中时才能获取附近WiFi;
+        this.wifiList.style.display='block';
         try {
           const result = await login({ adminkey: window.adminkey, K: 'getScanWiFi' });
           //console.log('获取WiFi名称', result);
           this.wifiList.list=result;
-          this.wifiList.style.display='block';
-          console.log('wifiList.list=',this.wifiList.list);
+          //console.log('wifiList.list=',this.wifiList.list);
         } catch (error) {
+           this.wifiList.style.display='none';
           console.log('获取WiFi名称失败', error);
         }
       }
@@ -340,7 +341,7 @@ class Setting extends HTMLElement {
         const user = JSON.parse(params.get('data'));
         console.log('获取设置数据', user); */
         settingData = JSON.parse(sessionStorage.getItem('settingData'));
-        console.log("获取设置数据", settingData);
+        //console.log("获取设置数据", settingData);
 
         //获取设置数据
         this.userList.innerHTML = '';

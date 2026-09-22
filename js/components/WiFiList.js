@@ -55,14 +55,10 @@ class WiFiList extends HTMLElement {
         }
         </style>
         <div class='wrap'>
-            <div>wifi名，信号强度,是否加密wifi名,信号强度,是否加密</div>
+            <div>数据正在等待返回中......</div>
             <ul>
-                <li>wifi名,信号强度,是否加密wifi名,信号强度，是否加密</li>
-                <li>wifi名，信号强度，是否加密</li>
-                <li>wifi名，信号强度，是否加密</li>
-                <li>wifi名，信号强度，是否加密</li>
-                <li>wifi名，信号强度，是否加密</li>
-                <li>wifi名，信号强度，是否加密</li>
+           
+                <li></li>
             </ul>
         </div>       
 
@@ -77,6 +73,9 @@ class WiFiList extends HTMLElement {
            Object.assign(event, { SSID:ev.target.dataset.SSID });//向event中添加参数被点击的wifi名
            this.dispatchEvent(event); //触发自定义事件
            this.style.display='none';
+           this.divLabel.innerHTML='数据正在等待返回中.......';
+           this.ul.innerHTML='';
+           
         })
         
     }
