@@ -21,15 +21,15 @@ window.userkey = localStorage.getItem('userkey');
 window.adminkey = localStorage.getItem('adminkey');
 document.body.style.height = winHeight + 'px'; //确定body高度防止输入法弹出上上推网页
 /* 暂时关闭开始写设置界面 --------------------------------------------------------------------------------*/
-/*wifiSwitch.style.display = "none";
+wifiSwitch.style.display = "none";
 wifiFooter.style.display = "none";
 window.msg.style.display = "none";
-wifiSetting.style.display = 'block';*/
+wifiSetting.style.display = 'block';
 /* 暂时关闭开始写主界面 --------------------------------------------------------------------------------*/
- wifiSwitch.style.display = "relative";
+/* wifiSwitch.style.display = "relative";
 wifiFooter.style.display = "block";
 window.msg.style.display = "block";
-wifiSetting.style.display = 'none'; 
+wifiSetting.style.display = 'none'; */
 getStatus();
 /*window.addEventListener('resize',()=>{
   console.log('窗口大小发生变化',innerHeight);

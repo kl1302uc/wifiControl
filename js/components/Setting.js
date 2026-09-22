@@ -1,4 +1,5 @@
 import './EditUser.js';
+import './NetSetting.js';
 import { login, reconnect, close, open, getStatus, getSetting } from '../request.js';
 let settingData = {};
 class Setting extends HTMLElement {
@@ -162,9 +163,11 @@ class Setting extends HTMLElement {
               font-size:5vw;
             }
         </style>
+        <edit-user></edit-user>
+        <wifi-list></wifi-list>
+        <net-setting></net-setting>
         <div class="wrap">
-            <edit-user></edit-user>
-           
+            
             <header>设置界面</header>
             <ul>
               <li class='setWiFi'>
@@ -190,21 +193,6 @@ class Setting extends HTMLElement {
               </li>
                 <li class='setUserList'>
                   <ul class='userList'>
-                    <li><span>刘波</span><span>123456</span><button>删除</button></li>
-                    <li><span>刘菲菲</span><span>123456789</span><button>删除</button></li>
-                    <li><span>刘雨桐</span><span>1234567894466646443466464646464649</span><button>删除</button></li>
-                    <li><span>刘妍</span><span>12</span><button>删除</button></li>
-                    <li><span>刘宗广</span><span>a</span><button>删除</button></li>
-                    <li><span>刘一</span><span>a</span><button>删除</button></li>
-                    <li><span>刘二</span><span>a</span><button>删除</button></li>
-                    <li><span>刘三</span><span>a</span><button>删除</button></li>
-                    <li><span>刘世界</span><span>a</span><button>删除</button></li>
-                    <li><span>刘世野</span><span>a</span><button>删除</button></li>
-                    <li><span>刘世纪</span><span>a</span><button>删除</button></li>
-                    <li><span>刘世杰</span><span>a</span><button>删除</button></li>
-                    <li><span>刘世面</span><span>a</span><button>删除</button></li>
-                    <li><span>张三</span><span>a</span><button>删除</button></li>
-                    <li><span>李四</span><span>a</span><button>删除</button></li>
                     <li class='addUser'>+添加用户</li>
   
                   </ul>
@@ -213,12 +201,12 @@ class Setting extends HTMLElement {
                
             
             </ul>
-             <wifi-list><wifi-list>
+             
         <div>
         `
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.wifiList=this.shadowRoot.querySelector('.wrap>wifi-list');
+    this.wifiList = this.shadowRoot.querySelector('wifi-list');
     this.SSIDInput = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:first-child>input');
     this.PASSInput = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:last-child>input');
     this.SSIDX = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>label:first-child>span:last-child');
@@ -226,13 +214,20 @@ class Setting extends HTMLElement {
     this.getScanWiFi = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:first-child>span');
     this.setSTAWiFi = this.shadowRoot.querySelector('.setWiFi>.setWiFiName>:last-child>span');
     this.userList = this.shadowRoot.querySelector('.setUserList>.userList');
-    this.editUser = this.shadowRoot.querySelector('.wrap>edit-user');
+    this.editUser = this.shadowRoot.querySelector('edit-user');
+    this.netSetting = this.shadowRoot.querySelector('net-setting');
     this.wifiSTA = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_STA"]');
     this.wifiAP = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_AP"]');
-    this.wifiList.addEventListener('confirmClick',(ev)=>{
-      console.log('ev.SSID',ev.SSID);
-      this.SSIDInput.value=ev.SSID || '';
-      this.PASSInput.value='';
+
+    this.setSTAWiFi.addEventListener('click', () => {
+      console.log('打开无线终端面板');
+      this.netSetting.style.display = 'block';
+
+    });
+    this.wifiList.addEventListener('confirmClick', (ev) => {
+      console.log('ev.SSID', ev.SSID);
+      this.SSIDInput.value = ev.SSID || '';
+      this.PASSInput.value = '';
     })
     /* 判断输入框的内容是否合法不合法会在右侧显示X */
     this.SSIDInput.addEventListener("input", (ev) => {
@@ -268,14 +263,14 @@ class Setting extends HTMLElement {
     this.getScanWiFi.addEventListener('click', async () => {
       console.log('获取WiFi名称被点击', this.wifiSTA.checked);
       if (this.wifiSTA.checked) {//只有无线终端复选框被选中时才能获取附近WiFi;
-        this.wifiList.style.display='block';
+        this.wifiList.style.display = 'block';
         try {
           const result = await login({ adminkey: window.adminkey, K: 'getScanWiFi' });
           //console.log('获取WiFi名称', result);
-          this.wifiList.list=result;
+          this.wifiList.list = result;
           //console.log('wifiList.list=',this.wifiList.list);
         } catch (error) {
-           this.wifiList.style.display='none';
+          this.wifiList.style.display = 'none';
           console.log('获取WiFi名称失败', error);
         }
       }
