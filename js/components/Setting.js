@@ -218,10 +218,14 @@ class Setting extends HTMLElement {
     this.netSetting = this.shadowRoot.querySelector('net-setting');
     this.wifiSTA = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_STA"]');
     this.wifiAP = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_AP"]');
+    this.netSetting.addEventListener("confirmClick", (ev) => {
+      console.log("confirmClick", ev.wifiSettingData);
 
+    })
     this.setSTAWiFi.addEventListener('click', () => {
       console.log('打开无线终端面板');
       this.netSetting.style.display = 'block';
+      this.netSetting.wifiSettingData = settingData.wifiConfig;
 
     });
     this.wifiList.addEventListener('confirmClick', (ev) => {
@@ -336,7 +340,7 @@ class Setting extends HTMLElement {
         const user = JSON.parse(params.get('data'));
         console.log('获取设置数据', user); */
         settingData = JSON.parse(sessionStorage.getItem('settingData'));
-        //console.log("获取设置数据", settingData);
+        console.log("获取设置数据", settingData);
 
         //获取设置数据
         this.userList.innerHTML = '';

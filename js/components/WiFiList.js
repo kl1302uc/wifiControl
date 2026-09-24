@@ -94,6 +94,7 @@ class WiFiList extends HTMLElement {
 
         return this.listWifi;
     }
+    /* 获取wifi列表显示在ul上 */
     set list(value) {
         let objstr = '';
         this.listWifi = value;
