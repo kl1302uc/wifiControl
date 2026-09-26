@@ -223,6 +223,28 @@ class Setting extends HTMLElement {
     this.wifiSTA = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_STA"]');
     this.wifiAP = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_AP"]');
     this.tagIpName = this.wifiAP.parentNode.nextElementSibling;
+    this.saveWifi = this.shadowRoot.querySelector(".setWiFi>.setWiFiModule>button");
+    this.saveWifi.addEventListener("click", () => {
+      let regex = /^[\w\-\.@#\u4e00-\u9fa5]{1,32}$/g; //匹配汉字、字母、数字的字符
+      let regex2 = /^[\w\-\.@#]{8,32}$/g; //匹配非汉字
+      if (regex.test(this.SSIDInput.value) && regex2.test(this.PASSInput.value)) {
+        if (this.wifiSTA.checked) {
+          settingData.wifiConfig.SSID = this.SSIDInput.value;
+          settingData.wifiConfig.PASS = this.PASSInput.value;
+        } else {
+          settingData.wifiConfig.AP_SSID = this.SSIDInput.value;
+          settingData.wifiConfig.AP_PASS = this.PASSInput.value;
+        }
+
+        login({ adminkey: window.adminkey, K: 'setConfigWiFi', wifiConfigStr: JSON.stringify(settingData.wifiConfig) });
+        //console.log('获取WiFi名称', result);
+        window.msg.innerHTML = "保存wifi配置完成";
+        //console.log('wifiList.list=',this.wifiList.list);
+        window.location.hash = '#index';
+      } else {
+        alert("WiFi名或密码错误！");
+      }
+    });
     let proxy = new Proxy(settingData, {
       get(target, prop) {
         console.log(`访问了属性：${prop}`);
@@ -251,11 +273,10 @@ class Setting extends HTMLElement {
     }) */
     /* NetSetting详细设置界面保存按钮被点击 */
     this.netSetting.addEventListener("confirmClick", (ev) => {
-      console.log("confirmClick", ev.wifiSettingData);
       proxy.wifiConfig = ev.wifiSettingData;
     })
     this.setSTAWiFi.addEventListener('click', () => {
-      console.log('打开无线终端面板');
+      console.log('打开IP设置面板');
       this.netSetting.style.display = 'block';
       this.netSetting.wifiSettingData = settingData.wifiConfig;
 
@@ -263,7 +284,8 @@ class Setting extends HTMLElement {
     this.wifiList.addEventListener('confirmClick', (ev) => {
       console.log('ev.SSID', ev.SSID);
       this.SSIDInput.value = ev.SSID || '';
-      this.PASSInput.value = '';
+      settingData.wifiConfig.SSID = this.SSIDInput.value;
+      //this.PASSInput.value = '';
     })
     /* 判断输入框的内容是否合法不合法会在右侧显示X */
     this.SSIDInput.addEventListener("input", (ev) => {
@@ -280,18 +302,23 @@ class Setting extends HTMLElement {
     this.wifiSTA.addEventListener('change', () => {
       if (!this.wifiSTA.checked) {
         this.wifiAP.checked = true;
+        settingData.wifiConfig.MODE = "WIFI_AP";
         this.SSIDInput.value = settingData.wifiConfig.AP_SSID;
         this.PASSInput.value = settingData.wifiConfig.AP_PASS;
       } else {
         this.SSIDInput.value = settingData.wifiConfig.SSID;
         this.PASSInput.value = settingData.wifiConfig.PASS;
+        settingData.wifiConfig.MODE = this.wifiAP.checked == true ? "WIFI_AP_STA" : "​WIFI_STA"
       }
     });
     this.wifiAP.addEventListener('change', () => {
       if (!this.wifiAP.checked) {
         this.wifiSTA.checked = true;
+        settingData.wifiConfig.MODE = "WIFI_STA";
         this.SSIDInput.value = settingData.wifiConfig.SSID;
         this.PASSInput.value = settingData.wifiConfig.PASS;
+      } else {
+        settingData.wifiConfig.MODE = this.wifiSTA.checked == true ? "WIFI_AP_STA" : "​WIFI_AP"
       }
     });
 
@@ -367,11 +394,12 @@ class Setting extends HTMLElement {
       if (window.location.hash == "#setting") {
         console.log('setting界面被打开');
         let results = await getSetting();
+        settingData = results
         sessionStorage.setItem('settingData', JSON.stringify(results)); //将设置数据存储到sessionStorage中
         /* const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
         const user = JSON.parse(params.get('data'));
         console.log('获取设置数据', user); */
-        settingData = JSON.parse(sessionStorage.getItem('settingData'));
+        //settingData = JSON.parse(sessionStorage.getItem('settingData'));
         console.log("获取设置数据", settingData);
 
         //获取设置数据
