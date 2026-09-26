@@ -2,6 +2,7 @@ import './EditUser.js';
 import './NetSetting.js';
 import { login, reconnect, close, open, getStatus, getSetting } from '../request.js';
 let settingData = {};
+
 class Setting extends HTMLElement {
 
   constructor() {
@@ -204,6 +205,9 @@ class Setting extends HTMLElement {
              
         <div>
         `
+
+
+
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.wifiList = this.shadowRoot.querySelector('wifi-list');
@@ -218,9 +222,37 @@ class Setting extends HTMLElement {
     this.netSetting = this.shadowRoot.querySelector('net-setting');
     this.wifiSTA = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_STA"]');
     this.wifiAP = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_AP"]');
+    this.tagIpName = this.wifiAP.parentNode.nextElementSibling;
+    let proxy = new Proxy(settingData, {
+      get(target, prop) {
+        console.log(`访问了属性：${prop}`);
+        return target[prop];
+      },
+      set: (target, prop, value) => {
+        console.log(`设置属性 ${prop} 为 ${value}`);
+        target[prop] = value;
+        console.log(value);
+        if (prop == "wifiConfig") {
+          if (this.wifiSTA.checked == true) {
+            this.SSIDInput.value = value.SSID;
+            this.PASSInput.value = value.PASS;
+
+          } else {
+            this.SSIDInput.value = value.AP_SSID;
+            this.PASSInput.value = value.AP_PASS;
+          }
+          this.tagIpName.innerText = value.AP_localIP;
+        }
+        return true;
+      }
+    });
+    /* this.tagIpName.addEventListener("click", () => {
+
+    }) */
+    /* NetSetting详细设置界面保存按钮被点击 */
     this.netSetting.addEventListener("confirmClick", (ev) => {
       console.log("confirmClick", ev.wifiSettingData);
-
+      proxy.wifiConfig = ev.wifiSettingData;
     })
     this.setSTAWiFi.addEventListener('click', () => {
       console.log('打开无线终端面板');
