@@ -16,7 +16,9 @@ class NetSetting extends HTMLElement {
         position:fixed;
         z-index:200;
         width:100%;
+        height:100%;
         background-color:gray;
+        overflow:auto;
         
       }
       .wrap{
@@ -24,7 +26,6 @@ class NetSetting extends HTMLElement {
         flex-direction:column;
         justify-content:flex-start;
         font-size:6vw;
-        height:100dvh;
         margin:0 1vw;
       }
       .wrap>h3{
@@ -88,12 +89,14 @@ class NetSetting extends HTMLElement {
       <label><span>DNS2:</span><input name='dns2'/><span>x</span></label>
       
       <h3>接入点配置(WIFI_AP)</h3>
-      <label><span>隐藏WiFi</span><input name="AP_channel" type="checkbox"/></label>
+      <label><span>隐藏WiFi</span><input name="AP_hidden" type="checkbox"/></label>
       <label><span>WiFi名称:</span><input name='AP_SSID'/><span>x</span></label>
       <label><span>WiFi密码:</span><input name='AP_PASS'/><span>x</span></label>
       <label><span>IP地址:</span><input name='AP_localIP'/><span>x</span></label>
       <label><span>子网掩码:</span><input name='AP_subnet'/><span>x</span></label>
       <label><span>网关:</span><input name='AP_gateway'/><span>x</span></label>
+      <label><span>频道:</span><input type="number" name='AP_channel' placeholder='共13个频道'/><span>x</span></label>
+      <label><span>在线数:</span><input type="number" name='AP_maxConection' placeholder='允许的最多10个'/><span>x</span></label>
       <div class='btn'><button>取消</button><button>保存</button></div>
     </div>
     
@@ -109,11 +112,14 @@ class NetSetting extends HTMLElement {
     this.gateway = this.shadowRoot.querySelector('.wrap>label>input[name="gateway"]');
     this.dns1 = this.shadowRoot.querySelector('.wrap>label>input[name="dns1"]');
     this.dns2 = this.shadowRoot.querySelector('.wrap>label>input[name="dns2"]');
+    this.AP_hidden = this.shadowRoot.querySelector('.wrap>label>input[name="AP_hidden"]');
     this.AP_SSID = this.shadowRoot.querySelector('.wrap>label>input[name="AP_SSID"]');
     this.AP_PASS = this.shadowRoot.querySelector('.wrap>label>input[name="AP_PASS"]');
     this.AP_localIP = this.shadowRoot.querySelector('.wrap>label>input[name="AP_localIP"]');
     this.AP_subnet = this.shadowRoot.querySelector('.wrap>label>input[name="AP_subnet"]');
     this.AP_gateway = this.shadowRoot.querySelector('.wrap>label>input[name="AP_gateway"]');
+    this.AP_channel = this.shadowRoot.querySelector('.wrap>label>input[name="AP_channel"]');
+    this.AP_maxConection = this.shadowRoot.querySelector('.wrap>label>input[name="AP_maxConection"]');
     this.spanX = this.shadowRoot.querySelectorAll(".wrap>label>span:nth-child(3)");
     this.input = this.shadowRoot.querySelectorAll(".wrap>label>input");
     const matchInput = () => {
@@ -127,7 +133,14 @@ class NetSetting extends HTMLElement {
         } else if (['localIP', 'subnet', 'gateway', 'dns1', 'dns2', "AP_local", "AP_subnet", "AP_gateway"].includes(element.name)) {
           let regex = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/g; //匹配IP地址
           element.nextElementSibling.style.visibility = regex.test(element.value) ? "hidden" : "visible";
+        } else if (element.name == 'AP_maxConection') {
+          let regex = /^([1-9]|10)$/g;//匹配1-10
+          element.nextElementSibling.style.visibility = regex.test(element.value) ? "hidden" : "visible";
+        } else if (element.name == "AP_channel") {
+          let regex = /^(1[0-3]|[1-9])$/g; //匹配1-13
+          element.nextElementSibling.style.visibility = regex.test(element.value) ? "hidden" : "visible";
         }
+
       })
     }
     this.DHCP.addEventListener("input", () => {
@@ -177,6 +190,14 @@ class NetSetting extends HTMLElement {
         } else if (['localIP', 'subnet', 'gateway', 'dns1', 'dns2', "AP_localIP", "AP_subnet", "AP_gateway"].includes(ev.target.name)) {
           let regex = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/g; //匹配IP地址
           ev.target.nextElementSibling.style.visibility = regex.test(ev.target.value) ? "hidden" : "visible";
+        } else if (ev.target.name == "AP_maxConection") {
+          let regex = /^([1-9]|10)$/g; //匹配1-10
+          ev.target.nextElementSibling.style.visibility = regex.test(ev.target.value) ? "hidden" : "visible";
+
+        } else if (ev.target.name == "AP_channel") {
+          let regex = /^(1[0-3]|[1-9])$/g; //匹配1-13
+          ev.target.nextElementSibling.style.visibility = regex.test(ev.target.value) ? "hidden" : "visible";
+
         }
 
       }
@@ -195,11 +216,15 @@ class NetSetting extends HTMLElement {
         gateway: this.gateway.value,
         dns1: this.dns1.value,
         dns2: this.dns2.value,
+        AP_hidden: this.AP_hidden.value,
         AP_SSID: this.AP_SSID.value,
         AP_PASS: this.AP_PASS.value,
         AP_localIP: this.AP_localIP.value,
         AP_subnet: this.AP_subnet.value,
-        AP_gateway: this.AP_gateway.value
+        AP_gateway: this.AP_gateway.value,
+        AP_channel: this.AP_channel.value,
+        AP_maxConection: this.AP_maxConection.value,
+
       });
     return this._wifiSettingData;
 
@@ -214,11 +239,14 @@ class NetSetting extends HTMLElement {
     this.gateway.value = value.gateway ?? '';
     this.dns1.value = value.dns1 ?? '';
     this.dns2.value = value.dns2 ?? '';
+    this.AP_hidden.checked = value.AP_hidden ?? false;
     this.AP_SSID.value = value.AP_SSID ?? '';
     this.AP_PASS.value = value.AP_PASS ?? '';
     this.AP_localIP.value = value.AP_localIP ?? '';
     this.AP_subnet.value = value.AP_subnet ?? '';
     this.AP_gateway.value = value.AP_gateway ?? '';
+    this.AP_channel.value = value.AP_channel ?? 1;
+    this.AP_maxConection.value = value.AP_maxConection ?? 4;
   }
 }
 customElements.define('net-setting', NetSetting);
