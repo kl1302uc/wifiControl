@@ -126,6 +126,7 @@ class Setting extends HTMLElement {
               flex:1;
               height:0;
               min-height:0;
+
               overflow:auto;
               color:white;
             }
@@ -145,11 +146,14 @@ class Setting extends HTMLElement {
               border-bottom:solid 1px black;
              
             }
+            .wrap .userList>li>span:nth-child(1){
+              max-width:60vw;
+              overflow-x:auto;
+            }
             .wrap .userList>li>span:nth-child(2){
               display:block;
               flex:1;
               color:#FDE6E0;
-            
               overflow:auto;
               white-space:nowrap; 
               margin:0 1vw;
@@ -163,6 +167,12 @@ class Setting extends HTMLElement {
               /*pointer-events:none;*/
               font-size:5vw;
             }
+            .wrap .manage>label>span:last-child{
+              color:red;
+              visibility:hidden;
+              
+            }
+
         </style>
         <edit-user></edit-user>
         <wifi-list></wifi-list>
@@ -187,9 +197,9 @@ class Setting extends HTMLElement {
               </li>
               <li class='manage'>
                 
-                  <label><span>管理员旧密码:</span><input type='text'/></label>
-                  <label><span>管理员新密码:</span><input type='text'/></label>
-                  <div class='setManage'><span>忘记密码按重置按钮5秒以上，默认密码admin</span><button>保存设置</button></div>
+                  <label><span>管理员旧密码:</span><input type='text' name="oldpassword"/><span>X</span></label>
+                  <label><span>管理员新密码:</span><input type='text' name="newpassword"/><span>X</span></label>
+                  <div class='setManage'><span>忘记密码按重置按钮7秒以上，默认密码admin</span><button>保存设置</button></div>
                 
               </li>
                 <li class='setUserList'>
@@ -224,9 +234,42 @@ class Setting extends HTMLElement {
     this.wifiAP = this.shadowRoot.querySelector('.setWiFi>.setWiFiModule>label>input[value="WIFI_AP"]');
     this.tagIpName = this.wifiAP.parentNode.nextElementSibling;
     this.saveWifi = this.shadowRoot.querySelector(".setWiFi>.setWiFiModule>button");
+    this.adminWarp = this.shadowRoot.querySelector(".manage");
+    this.changeAdmin = this.shadowRoot.querySelector(".manage>.setManage");
+    this.oldpasswordInput = this.shadowRoot.querySelector(".manage>label>input[name='oldpassword']");
+    this.newpasswordInput = this.shadowRoot.querySelector(".manage>label>input[name='newpassword']");
+    let regexAdmin = /^[\w\-\.@#]{2,32}$/;
+    /* 在管理员密码输入时提示是否错误 */
+    this.adminWarp.addEventListener("input", (ev) => {
+      ev.target.nextElementSibling.style.visibility = regexAdmin.test(ev.target.value) ? "hidden" : "visible";
+    })
+    this.changeAdmin.addEventListener("click", async () => {
+      let oldpassword = this.oldpasswordInput.value;
+      let newpassword = this.newpasswordInput.value;
+      if (regexAdmin.test(oldpassword) && regexAdmin.test(newpassword)) {
+        try {
+          const result = await login({ adminkey: window.adminkey, K: 'changeAdminPass', changeAdminPass: JSON.stringify({ admin: "admin", oldpassword, newpassword }) });
+
+          result.adminkey ? window.adminkey = result.adminkey : alert("管理员密码更换失败！error=" + res.error);
+          this.oldpasswordInput.value = this.newpasswordInput.value = "";
+          window.msg.innerHTML = "修改管理员密码成功！";
+          window.location.hash = "#index";//跳回主页
+        } catch (err) {
+          alert("管理员密码更换失败！err=" + (err?.message || err));
+        }
+      } else {
+        alert("管理员密码格式错误！");
+      }
+
+
+    })
+    /* 检查保存wifi设置到单片机 */
     this.saveWifi.addEventListener("click", () => {
+      /* 正则检测是否有错误 */
       let regex = /^[\w\-\.@#\u4e00-\u9fa5]{1,32}$/g; //匹配汉字、字母、数字的字符
       let regex2 = /^[\w\-\.@#]{8,32}$/g; //匹配非汉字
+
+
       if (regex.test(this.SSIDInput.value) && regex2.test(this.PASSInput.value)) {
         if (this.wifiSTA.checked) {
           settingData.wifiConfig.SSID = this.SSIDInput.value;
@@ -235,25 +278,27 @@ class Setting extends HTMLElement {
           settingData.wifiConfig.AP_SSID = this.SSIDInput.value;
           settingData.wifiConfig.AP_PASS = this.PASSInput.value;
         }
-
+        /* 直接发送保存在ESP单片机本地 */
         login({ adminkey: window.adminkey, K: 'setConfigWiFi', wifiConfigStr: JSON.stringify(settingData.wifiConfig) });
         //console.log('获取WiFi名称', result);
         window.msg.innerHTML = "保存wifi配置完成";
         //console.log('wifiList.list=',this.wifiList.list);
         window.location.hash = '#index';
       } else {
-        alert("WiFi名或密码错误！");
+        alert("WiFi名或密码格式错误！");
       }
     });
+    /* 数据代理在数据变化后input内容也改变 */
     let proxy = new Proxy(settingData, {
       get(target, prop) {
         console.log(`访问了属性：${prop}`);
         return target[prop];
       },
       set: (target, prop, value) => {
-        console.log(`设置属性 ${prop} 为 ${value}`);
+        console.log(`设置属性 ${prop} 为 `);
         target[prop] = value;
         console.log(value);
+        /* 这个数值一般为IP详细设置界面到设置界面赋值 */
         if (prop == "wifiConfig") {
           if (this.wifiSTA.checked == true) {
             this.SSIDInput.value = value.SSID;
@@ -275,18 +320,30 @@ class Setting extends HTMLElement {
     this.netSetting.addEventListener("confirmClick", (ev) => {
       proxy.wifiConfig = ev.wifiSettingData;
     })
+    /* 打开wifi详细设置面板 */
     this.setSTAWiFi.addEventListener('click', () => {
       console.log('打开IP设置面板');
+      /* 将input修改的内容带到详细设置界面中 */
+      if (this.wifiSTA.checked) {
+        settingData.wifiConfig.SSID = this.SSIDInput.value;
+        settingData.wifiConfig.PASS = this.PASSInput.value;
+      } else {
+        settingData.wifiConfig.AP_SSID = this.SSIDInput.value;
+        settingData.wifiConfig.AP_PASS = this.PASSInput.value;
+      }
+      /* 进入详细界面 */
       this.netSetting.style.display = 'block';
       this.netSetting.wifiSettingData = settingData.wifiConfig;
 
     });
+    /* 扫描附近wifi完成后，点击选择列表后将指定的WiFi名赋值给input */
     this.wifiList.addEventListener('confirmClick', (ev) => {
       console.log('ev.SSID', ev.SSID);
       this.SSIDInput.value = ev.SSID || '';
       settingData.wifiConfig.SSID = this.SSIDInput.value;
       //this.PASSInput.value = '';
     })
+
     /* 判断输入框的内容是否合法不合法会在右侧显示X */
     this.SSIDInput.addEventListener("input", (ev) => {
       //let regex = /(.*?)/g; //匹配汉字、字母、数字的字符
@@ -322,7 +379,7 @@ class Setting extends HTMLElement {
       }
     });
 
-
+    /* wifi名称被点击将弹出扫描面板 */
     this.getScanWiFi.addEventListener('click', async () => {
       console.log('获取WiFi名称被点击', this.wifiSTA.checked);
       if (this.wifiSTA.checked) {//只有无线终端复选框被选中时才能获取附近WiFi;
@@ -334,20 +391,31 @@ class Setting extends HTMLElement {
           //console.log('wifiList.list=',this.wifiList.list);
         } catch (error) {
           this.wifiList.style.display = 'none';
-          console.log('获取WiFi名称失败', error);
+          console.log('获取WiFi名称失败', (error?.message || error));
         }
       }
     });
     /*列表被点击ul事件*/
-    this.userList.addEventListener('click', (ev) => {
+    this.userList.addEventListener('click', async (ev) => {
+
 
       if (ev.target.nodeName == 'BUTTON') { //删除按钮被点击
-        let result = confirm("确定要删除\"" + ev.target.parentNode.firstElementChild.innerText + "\"吗?");
+        //let ul = ev.target.parentNode.parentNode;
+        let li = ev.target.parentNode;
+        let user = ev.target.parentNode.firstElementChild.innerText;
+        let result = confirm("确定要删除\"" + user + "\"吗?");
         if (result) {
           //--------------------------此处添加删除单片机的相关用户函数--------------------------------------
-          ev.target.parentNode.parentNode.removeChild(ev.target.parentNode);
+          try {
+            const res = await login({ adminkey: window.adminkey, K: 'delUser', delUser: user });
+            console.log(li.innerHTML);
+            li.remove();
+            //ev.target.parentNode.parentNode.removeChild(ev.target.parentNode);//放在这里不能用
+          } catch (err) {
+            alert("删除用户失败！");
+            console.warn("删除用户失败", (err?.message || err));
+          }
         }
-
       } else if (ev.target.innerText == '+添加用户') { //最下面添加用户被点击
         console.log('添加用户被点击');
         this.editUser.style.display = 'block';
@@ -361,7 +429,7 @@ class Setting extends HTMLElement {
 
     });
     /*添加编辑后点击保存按钮触发的事件*/
-    this.editUser.addEventListener('confirmClick', (ev) => {
+    this.editUser.addEventListener('confirmClick', async (ev) => {
       let username = this.editUser.username.value;
       let password = this.editUser.password.value;
       if (!this.judgment(password, username)) return;//判断字符串是否合法
@@ -372,20 +440,33 @@ class Setting extends HTMLElement {
           alert('用户名已存在');
           return;
         }
-        const li = document.createElement('li');
-        li.innerHTML = `<span>${username}</span><span>${password}</span><button>删除</button>`;
-        ev.target.currentLi.parentNode.insertBefore(li, ev.target.currentLi);
-        console.log('添加用户被点击触发事件'); //-----------------------------------------------------------
+        try {
+          const result = await login({ adminkey: window.adminkey, K: 'addUserPass', userPass: JSON.stringify({ username, password }) });
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${username}</span><span>${password}</span><button>删除</button>`;
+          this.editUser.currentLi.parentNode.insertBefore(li, this.editUser.currentLi);
+          console.log('添加用户被点击触发事件'); //-----------------------------------------------------------
+        } catch (err) {
+          alert("添加用户失败！");
+          console.warn("添加用户失败！", (err?.message || err));
+        }
       } else { //编辑处理事件
         if (this.queryRepeat(username, Array.from(this.editUser.currentLi.parentNode.children).indexOf(this.editUser.currentLi)) == true) {
           alert('用户名已存在');
           return;
         }
         //console.log(Array.from(this.editUser.currentLi.parentNode.children).indexOf(this.editUser.currentLi));
-        this.editUser.currentLi.firstElementChild.innerText = username; //将编辑的用户名赋值到点击的列表中
-        this.editUser.currentLi.children[1].innerText = password; //将编辑的密码赋值到点击的列表中
+        try {
+          const result = await login({ adminkey: window.adminkey, K: 'addUserPass', userPass: JSON.stringify({ username, password }) });
+          this.editUser.currentLi.firstElementChild.innerText = username; //将编辑的用户名赋值到点击的列表中
+          this.editUser.currentLi.children[1].innerText = password; //将编辑的密码赋值到点击的列表中
+        } catch (err) {
+          alert("编辑用户失败！");
+          console.warn("编辑用户失败！", (err?.message || err));
+        }
 
       }
+
       this.editUser.style.display = 'none'; //关闭用户编辑窗口
     })
     /* 设置界面进入 */
@@ -444,14 +525,18 @@ class Setting extends HTMLElement {
   /*用正则表达式判断字符串是否合法*/
   judgment(password, username = 'a') {
     /*创建正则表达式*/
-    const limitUsername = /^[\w\u4e00-\u9fa5]+$/g; //限定用户名只能为汉子字母数字及下划线
-    const limitPassword = /[^\w]+/g;
+    const limitUsername = /^[\w\u4e00-\u9fa5]{1,32}$/g; //限定用户名只能为汉子字母数字及下划线
+    const limitPassword = /[^\w]{1,32}/g;
     /*两个字符串都进行删首尾空*/
     password = password.trim();
     username = username.trim();
     /*判断用户名密码是否为空*/
     if (!username || !password) {
       alert('用户名或密码不能为空');
+      return false;
+    }
+    if (username.length > 32 || password.length > 32) {
+      alert('用户名密码不能大于32个字符');
       return false;
     }
     /*判断用户名是否合法*/
