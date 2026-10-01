@@ -483,18 +483,20 @@ class Setting extends HTMLElement {
         //settingData = JSON.parse(sessionStorage.getItem('settingData'));
         console.log("获取设置数据", settingData);
 
-        //获取设置数据
+        //获取设置数据并添加到本地li元素中
         this.userList.innerHTML = '';
         settingData.key.forEach(user => {
           const li = document.createElement('li');
           li.innerHTML = `<span>${user.username}</span><span>${user.password}</span><button>删除</button>`;
           this.userList.appendChild(li);
         });
+
+        //添加'添加用户'li
         //this.userList.innerHTML += "<li class='addUser'>+添加用户</li>";
         const li = document.createElement('li');
         li.innerText = '+添加用户';
         this.userList.appendChild(li).classList.add('addUser');//添加添加用户 
-
+        this.tagIpName.innerHTML=settingData.wifiConfig.AP_localIP ?? '192.168.6.1';
         if (settingData.wifiConfig.MODE == 'WIFI_AP') {
           this.SSIDInput.value = settingData.wifiConfig.AP_SSID;
           this.PASSInput.value = settingData.wifiConfig.AP_PASS;
@@ -525,7 +527,7 @@ class Setting extends HTMLElement {
   /*用正则表达式判断字符串是否合法*/
   judgment(password, username = 'a') {
     /*创建正则表达式*/
-    const limitUsername = /^[\w\u4e00-\u9fa5]{1,32}$/g; //限定用户名只能为汉子字母数字及下划线
+    const limitUsername = /^(?!admin$)[\w\u4e00-\u9fa5]{1,32}$/g; //限定用户名只能为汉子字母数字及下划线
     const limitPassword = /[^\w]{1,32}/g;
     /*两个字符串都进行删首尾空*/
     password = password.trim();
@@ -541,7 +543,7 @@ class Setting extends HTMLElement {
     }
     /*判断用户名是否合法*/
     if (!limitUsername.test(username)) {
-      alert('用户名只能为汉子、字母、数字及下划线！');
+      alert('用户名只能为汉子、字母、数字及下划线！且不能为admin');
       return false;
     };
     /*判断密码是否合法*/

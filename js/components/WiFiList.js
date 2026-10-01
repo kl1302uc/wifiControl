@@ -22,7 +22,7 @@ class WiFiList extends HTMLElement {
             height:100%;
             text-align:left;
             box-sizing:border-box;
-            background-color:gray;
+            background-color:#FFF2E2;
             display:flex;
            flex-direction:column;
            justify-content:flex-start;
@@ -32,7 +32,7 @@ class WiFiList extends HTMLElement {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            color:white;
+            color:deeppink;
         }
         .wrap>ul{
             flex:1;
@@ -47,7 +47,7 @@ class WiFiList extends HTMLElement {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            border-top:solid white 1px;
+            border-top:solid gray 1px;
         }
         </style>
         <div class='wrap'>

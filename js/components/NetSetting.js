@@ -36,7 +36,7 @@ class NetSetting extends HTMLElement {
       .wrap>label{
       /* border:solid 2px red;*/
         display:flex;
-        align-items:stretch;
+        align-items:center;
         margin-top:2vw;
 
       
@@ -96,7 +96,7 @@ class NetSetting extends HTMLElement {
       <label><span>子网掩码:</span><input name='AP_subnet'/><span>x</span></label>
       <label><span>网关:</span><input name='AP_gateway'/><span>x</span></label>
       <label><span>频道:</span><input type="number" name='AP_channel' placeholder='共13个频道'/><span>x</span></label>
-      <label><span>在线数:</span><input type="number" name='AP_maxConnection' placeholder='允许的最多10个'/><span>x</span></label>
+      <label><span>在线数:</span><input type="number" name='AP_maxConnection' placeholder='允许的最多4个'/><span>x</span></label>
       <div class='btn'><button>取消</button><button>保存</button></div>
     </div>
     
